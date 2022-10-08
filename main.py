@@ -1,7 +1,6 @@
 import threading
 import queue
-from order.order import *
-from flask import Flask
+from flask import Flask, jsonify, request
 
 # order_queue = queue.Queue()
 # delivery_queue = queue.Queue()
@@ -30,6 +29,17 @@ from flask import Flask
 # threading.Thread(target=order, args=(order_queue, )).start()
 
 app = Flask(__name__)
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
+
+@app.route('/order',methods = ['POST'])
+def post_order():
+   test = request.get_json()
+   print(test)
+   return 'Not found yet', 404
+
+@app.route('/order/<string:id>/',methods = ['GET'])
+def get_order(id):
+    return "ID is " + id
+      
+
+if __name__ == "__main__":
+    app.run(debug=True)
