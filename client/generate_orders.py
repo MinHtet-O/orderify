@@ -7,9 +7,9 @@ order_file_path = "./resources/orders.json"
 
 def generate_order(orders):
     for order in orders:
-        time.sleep(1)
+        time.sleep(0)
         x = requests.post(url, json = order)
-        print(x)    
+        print(x)
 
 def load_orders():
     with open(order_file_path) as f:

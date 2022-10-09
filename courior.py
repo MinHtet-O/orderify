@@ -5,4 +5,3 @@ def courier(delivery_queue):
         if order == None:
             print("All items delivered")
             break
-        print(f'Delivering on {order.name}')
