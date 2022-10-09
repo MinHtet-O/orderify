@@ -19,9 +19,23 @@ class OrderStatus(str, Enum):
 
     # Order has failed.
     FAILED = "FAILED"
+    @staticmethod
+    def decode_json(json):
+        # TODO: validate each fields and return appropriate error
+        # TODO: refactor as custom validator method
+        if not 'status' in json:
+            raise InvalidOrderError("status should not be empty")
+        # TODO: throw invalid status error
+        try:
+            status = OrderStatus[json['status'].upper()]
+        except:
+            raise InvalidOrderStatus("{} is not valid status".format(status))
+        return status
+        
     
 
 class Order:
+    # TODO: remove method
     def update_status(self, orderStatus: OrderStatus):
         self.status = orderStatus
 
@@ -34,16 +48,16 @@ class Order:
         self.update_status(OrderStatus.PENDING)
 
     def __repr__(self):
-        str = """Order: {id}
-        name: {name}
-        temp: {temp}
-        shelfLife: {shelfLife}
-        decayRate: {decayRate}""".format(
-            id = self.id,
-            name = self.name,
-            temp = self.temp,
-            shelfLife = self.shelf_life,
-            decayRate = self.decay_rate
+        str = """Order: {}
+        name: {}
+        temp: {}
+        shelfLife: {}
+        decayRate: {}""".format(
+            self.id,
+            self.name,
+            self.temp,
+            self.shelf_life,
+            self.decay_rate
             )
         return str
 
@@ -68,7 +82,9 @@ class Order:
 
 class InvalidOrderError(Exception):
     pass
-    
+class InvalidOrderStatus(Exception):
+    pass
+
 class OrderEncoder(json.JSONEncoder):
     def default(self, obj):
             data = dict()
