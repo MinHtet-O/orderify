@@ -15,7 +15,7 @@ class Kitchen:
     def update_order_status(self, id: string, status: OrderStatus):
         if id not in self.orders:
             raise InvalidOrderID("order id {} not exists".format(id))
-        self.orders[id].status = status
+        self.orders[id].update_status(status)
         
     def put_order(self, order: Order):
         self.orders[order.id] = order
@@ -23,6 +23,8 @@ class Kitchen:
         order.update_status(OrderStatus.ACCEPTED)
 
     def get_order(self, id):
+        if id not in self.orders.keys():
+            raise InvalidOrderID("order id {} not exists".format(id))
         return self.orders[id]
 
     def get_orders(self):
@@ -39,6 +41,7 @@ class Kitchen:
         time.sleep(0)
         print("order "+ order.name+ " is accepted")
         order.update_status(OrderStatus.WAITING)
+        print("LEN {}".format(len(self.orders)))
     
 # TODO: refactor all exceptions in the single folder
 class InvalidOrderError(Exception):

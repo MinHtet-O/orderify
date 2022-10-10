@@ -26,9 +26,10 @@ class OrderStatus(str, Enum):
         if not 'status' in json:
             raise InvalidOrderError("status should not be empty")
         # TODO: throw invalid status error
+        status = json['status'].upper()
         try:
-            status = OrderStatus[json['status'].upper()]
-        except:
+            status = OrderStatus[status]
+        except Exception as e:
             raise InvalidOrderStatus("{} is not valid status".format(status))
         return status
         
@@ -36,8 +37,8 @@ class OrderStatus(str, Enum):
 
 class Order:
     # TODO: remove method
-    def update_status(self, orderStatus: OrderStatus):
-        self.status = orderStatus
+    def update_status(self, order_status: OrderStatus):
+        self.status = order_status
 
     def __init__(self,id: string, name: string, temp: string, shelfLife: int, decayRate: float):
         self.id = id
