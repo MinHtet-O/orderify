@@ -1,43 +1,56 @@
-from typing import Any
-from unicodedata import name
-from enum import Enum
+from order import *
 
-# TODO: add status field to Order
-class ShelfTemp(str, Enum):
-    HOT = "PENDING"
-    COLD = "ACCEPTED"
-    FROZEN = "WAITING"
-    ANY = "DELIVERED"
 
-DECAY_MODS = {
+
+ALLOWABLE_DECAY_MODS = {
     ShelfTemp.HOT: 1,
     ShelfTemp.COLD: 1,
     ShelfTemp.FROZEN: 1,
-    ShelfTemp.ANY: 2
 }
+OVERFLOW_DECAY_MODS = 2
 
 class Shelf:
-    def __init__(self, size: int, temp: ShelfTemp, decay_mod ):
-        self.store = []
+    def __init__(self, size: int, temp: ShelfTemp ):
+        self.store: list[Order] = []
         self.size = size
         self.temp = temp
-        self.decay_mod = decay_mod
-        pass
+        if temp == None:
+            self.decay_mod = OVERFLOW_DECAY_MODS
+        else:
+            self.decay_mod = ALLOWABLE_DECAY_MODS[temp].value
 
     def check_full(self):
-        pass
+        if len(self.store) >= self.size:
+            return True
+        return False
 
-    def put_order(self):
-        pass
+    def put_order(self, order: Order):
+        if self.check_full():
+            return NoEmptySpace("shelf has reached to it's max storage of {}".format(self.size))
+        self.store.append(order)
+        return None
 
-    def remove_order(self):
-        pass
+    def drop_order(self, index: int):
+        del self.store[index]
 
-    def update_deteriorate(self):
-        #list through items and update deterioration value
-        pass
-    
-def get_inherent_value(shelf_life, order_age, decay_rate,decay_mod):
+    def update_deterioration(self):
+        for order in self.store:
+            value = calc_inherent_value(
+                shelf_life=order.shelf_life,
+                order_age= order.order_age,
+                decay_rate= order.decay_rate,
+                decay_mod=self.decay_mod
+            )
+            order.inherent_value = value
+
+
+def calc_inherent_value(shelf_life, order_age, decay_rate,decay_mod):
     value = (shelf_life - order_age - decay_rate* (order_age*decay_mod))/ shelf_life
     value = (round(value,8))
     return value
+
+class NoEmptySpace(Exception):
+    pass
+
+# test: define shelf size of 5. add 6 orders to the shelf.
+# expect: return error in 6th order

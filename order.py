@@ -4,6 +4,25 @@ from unicodedata import name
 from enum import Enum
 import json
 
+class ShelfTemp(str, Enum):
+    HOT = "HOT"
+    COLD = "COLD"
+    FROZEN = "FROZEN"
+
+    @staticmethod
+    def decode_json(json):
+        # TODO: validate each fields and return appropriate error
+        # TODO: refactor as custom validator method
+        if not 'temp' in json:
+            raise InvalidOrderError("temp should not be empty")
+        
+        temp = json['temp'].upper()
+        try:
+            temp = OrderStatus[temp]
+        except Exception as e:
+            raise InvalidOrderError("{} is not valid temp".format(temp))
+        return temp
+
 class OrderStatus(str, Enum):
     # Order is pending to be accepted
     PENDING = "PENDING"
@@ -30,7 +49,7 @@ class OrderStatus(str, Enum):
         try:
             status = OrderStatus[status]
         except Exception as e:
-            raise InvalidOrderStatus("{} is not valid status".format(status))
+            raise InvalidOrderError("{} is not valid status".format(status))
         return status
         
     
@@ -40,13 +59,15 @@ class Order:
     def update_status(self, order_status: OrderStatus):
         self.status = order_status
 
-    def __init__(self,id: string, name: string, temp: string, shelfLife: int, decayRate: float):
+    def __init__(self,id: string, name: string, temp: ShelfTemp, shelfLife: int, decayRate: float):
         self.id = id
         self.name = name
         self.temp = temp
         self.shelf_life = shelfLife
         self.decay_rate = decayRate
         self.update_status(OrderStatus.PENDING)
+        self.inherent_value = None
+        self.order_age = 0
 
     def __repr__(self):
         str = """Order: {}

@@ -12,7 +12,7 @@ class MyFirstTests(unittest.TestCase):
         ]
 
         for data in test_data:
-            value = get_inherent_value(
+            value = calc_inherent_value(
             shelf_life= data[0],
             decay_rate= data[1],
             order_age= data[2],
