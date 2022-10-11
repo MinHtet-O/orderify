@@ -1,8 +1,10 @@
-from time import sleep, time
+from time import time
+from typing import List
+from xmlrpc.client import Boolean
 from shelf import *
-import threading
 
-# TODO: add status field to Order
+# TODO: refactor orders
+# TODO: implement iterator/ generator for orders
 
 # every SHELF_MANAGEMENT_INTERVAL sec, shelf manager will
 # 1. update detoration values for the orders
@@ -16,22 +18,33 @@ SHELF_MANAGEMENT_INTERVAL = 1
 SHELF_LIFE_INC = 10
 
 class ShelfManager:
-    def __init__(self, allowable_shelves: list[Shelf], overflow_shelf: Shelf):
-        self.allowable_shelves = dict()
+    def __init__(self, allowable_shelves: dict[ShelfTemp, Shelf], overflow_shelf: Shelf):
+        self.allowable_shelves = allowable_shelves
         self.overflow_shelf = overflow_shelf
-        threading.Thread(target=self.__update_order_age).start()
-
-    def check_shelves_full(self):
+        
+    def check_shelves_full(self) -> Boolean:
         for shelf_key in self.allowable_shelves:
             if not self.allowable_shelves[shelf_key].check_full():
                 return False
         return self.overflow_shelf.check_full()
         
+    def peek_orders(self, temp: ShelfTemp) -> List[Order]:
+        if temp == None:
+            return self.overflow_shelf.get_orders()
 
+        if not self.temp_shelf_exit(temp):
+            raise TempNotMatchErr("no shelf match for temp {}".format(temp))
+        return self.allowable_shelves[temp].get_orders()
+        
+    def temp_shelf_exit(self, temp) -> Boolean:
+        if temp in self.allowable_shelves:
+            return True
+        return False
+        
     def put_order(self, order: Order):
         temp = order.temp
         
-        if temp not in self.allowable_shelves:
+        if not self.temp_shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for temp {}".format(temp))
         
         if not self.allowable_shelves[temp].check_full():
@@ -44,16 +57,19 @@ class ShelfManager:
 
         raise NoEmptySpaceErr("all shelves are full")
 
-    def __update_order_age(self):
+    # TODO: init function from the outside caller
+    def init_manager_thread(self):
         # initialize the thread to update order age every x second
         while True:
             time.sleep(SHELF_MANAGEMENT_INTERVAL)
-            self.update_deterioration()
+            self.manage_shelves()
             # TODO: discard orders less than 0
             # TODO: discard orders with delivered status
             # TODO: order moved to allowable shelf if overflow is full
             # TODO: ramdom order from overflow is dropped if all shelves are full
         
+    def manage_shelves(self):
+        pass
 
     def remove_order(self):
         pass
@@ -67,6 +83,8 @@ class ShelfManager:
     def remove_delivererd_order(self):
         #list through items and remove delivered order
         pass
+
+
 
 # Define 3 allowable shelves with size of 1. and overflow shelves with size of 2
 # put order with "HOT" temp
@@ -94,4 +112,3 @@ class ShelfManager:
 # put 1 order in HOT, 1 order in FROZEN,1 order in COLD and 2 order in overflow shelves
 # after SHELF_MANAGEMENT_INTERVAL sec,
 # expected : random item from overflow sheles is dropped
-

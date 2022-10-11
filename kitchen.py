@@ -12,7 +12,7 @@ PREP_TIME = 0
 
 class Kitchen:
     def __init__(self,order_queue: queue.Queue, delivery_queue: queue.Queue, shelf_manager: ShelfManager):
-        self.orders = dict()
+        self.orders:dict[str, Order] = {}
         self.delivery_queue = delivery_queue
         self.order_queue = order_queue
         self.shelf_manager = shelf_manager
