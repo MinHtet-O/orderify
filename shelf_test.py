@@ -1,7 +1,46 @@
 import unittest
 from shelf import *
 
-class MyFirstTests(unittest.TestCase):
+class ShelfTest(unittest.TestCase):
+    def setUp(self):
+        self.shelf: Shelf = Shelf(capacity= 2, temp=ShelfTemp.HOT)
+
+    def prepare_orders(self):
+        order1 = Order(id="1", name="Pizza", temp=ShelfTemp.HOT, shelfLife=1, decayRate=1)
+        order2 = Order(id="2", name="Hot Dog", temp=ShelfTemp.HOT, shelfLife=1, decayRate=1)
+        order3 = Order(id="3", name="Burger", temp=ShelfTemp.HOT, shelfLife=1, decayRate=1)
+        return (order1,order2,order3)
+    
+    def test_temp_not_match(self):
+        invalid_order = Order(id="1", name="Ice Cream", temp=ShelfTemp.FROZEN, shelfLife=1, decayRate=1)
+        # Expect: unable to accept order of different temp
+        with self.assertRaises(TempNotMatchErr):
+            self.shelf.put_order(invalid_order)
+    
+    def test_storage_capacity(self):
+        order1, order2, order3 = self.prepare_orders()
+
+        # put two orders to the shelf
+        self.shelf.put_order(order1)
+        self.shelf.put_order(order2)
+
+        # Expect: shelf is full
+        self.assertEqual(self.shelf.check_full(), True)
+
+        # Expect: unable to accept order anymore
+        with self.assertRaises(NoEmptySpaceErr):
+            self.shelf.put_order(order3)
+        
+        # remove order2
+        self.shelf.remove_order(1)
+
+        # Expect: shelf storage becomes 1
+        self.assertEqual(self.shelf.occupied_storage(), 1)
+
+        # Expect: shelf is no longer full
+        self.assertEqual(self.shelf.check_full(), False)
+
+class InherentValueTest(unittest.TestCase):
     def test_food_inherent_value(self):
         test_data = [
             #shelf_life, decay_rate, age, shelfdecay, value

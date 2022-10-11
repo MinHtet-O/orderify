@@ -71,7 +71,7 @@ class InvalidOrderID(Exception):
 # test positive: try to get order that doesn't exit
 # expected : raise error: order not found
 
-# tes negative: update the order status or order that doesn't exits 
+# test negative: update the order status or order that doesn't exits 
 # expected : raise error: order not found error
 
 # test negative: update the order status of failed order
@@ -79,3 +79,9 @@ class InvalidOrderID(Exception):
 
 # test positive: update the order status of normal order
 # expected: check with get_order, the order should have updated order status
+
+# set PREP_TIME to x and DELIVERY_TIME to y
+# put order
+# expected: status becomes pending immediately
+# expected: status becomes accepted after x sec
+# expected: status becomes delivered after y sec

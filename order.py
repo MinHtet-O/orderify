@@ -1,7 +1,7 @@
 from http.client import ACCEPTED
 import string
 import threading
-from unicodedata import name
+
 from enum import Enum
 import json
 
@@ -25,20 +25,18 @@ class ShelfTemp(str, Enum):
         return temp
 
 class OrderStatus(str, Enum):
+    
     # Order is pending to be accepted
     PENDING = "PENDING"
-
     # Order is accepted from kitchen
     ACCEPTED = "ACCEPTED"
-
     # Order is ready and waiting for delivery
     WAITING = "WAITING"
-
     # Order has delivered
     DELIVERED = "DELIVERED"
-
     # Order has failed.
     FAILED = "FAILED"
+
     @staticmethod
     def decode_json(json):
         # TODO: validate each fields and return appropriate error

@@ -4,47 +4,55 @@ import threading
 
 # TODO: add status field to Order
 
-# every DETORATION_TIMER sec, shelf manager will update detoration values for the orders
-DETORATION_TIMER = 1
+# every SHELF_MANAGEMENT_INTERVAL sec, shelf manager will
+# 1. update detoration values for the orders
+# 2. discard orders with value less than 0
+# 3. discard orders with status delivered
+# 4. if overflow shelf is full, existing order should moved to allowable shelf
+# 5. if all full, random order from overflow shelf is discarded
+SHELF_MANAGEMENT_INTERVAL = 1
 
 # every DETORATION_TIMER sec, shelf_life of each order will increase by SHELF_LIFE_INC
 SHELF_LIFE_INC = 10
 
 class ShelfManager:
     def __init__(self, allowable_shelves: list[Shelf], overflow_shelf: Shelf):
-        self.allowable_shelves = allowable_shelves
+        self.allowable_shelves = dict()
         self.overflow_shelf = overflow_shelf
         threading.Thread(target=self.__update_order_age).start()
 
-    def put_order(self, order: Order):
-        # put order on in the allowable shelve with respective temp
-        for shelf in self.allowable_shelves:
-            if shelf.temp == order.temp:
-                err = shelf.put_order(order)
-                if err == None:
-                    # the order is successfully put in the allowable shelf
-                    return
-                if err == NoEmptySpace:
-                    # all allowable shelves are full
-                    break
-        # put order in the overflow shelf
-        err = self.overflow_shelf(order)
-        if err == NoEmptySpace:
-            raise err
-        
-        
     def check_shelves_full(self):
-        full = False
-        for shelf in self.allowable_shelves:
-            full = shelf.check_full()
-        full = self.overflow_shelf.check_full()
-        return full
+        for shelf_key in self.allowable_shelves:
+            if not self.allowable_shelves[shelf_key].check_full():
+                return False
+        return self.overflow_shelf.check_full()
+        
+
+    def put_order(self, order: Order):
+        temp = order.temp
+        
+        if temp not in self.allowable_shelves:
+            raise TempNotMatchErr("no shelf match for temp {}".format(temp))
+        
+        if not self.allowable_shelves[temp].check_full():
+            self.allowable_shelves[temp].put_order(order)
+            return
+
+        if not self.overflow_shelf.check_full():
+            self.overflow_shelf.put_order(order)
+            return
+
+        raise NoEmptySpaceErr("all shelves are full")
 
     def __update_order_age(self):
         # initialize the thread to update order age every x second
         while True:
-            time.sleep(1)
+            time.sleep(SHELF_MANAGEMENT_INTERVAL)
             self.update_deterioration()
+            # TODO: discard orders less than 0
+            # TODO: discard orders with delivered status
+            # TODO: order moved to allowable shelf if overflow is full
+            # TODO: ramdom order from overflow is dropped if all shelves are full
         
 
     def remove_order(self):
@@ -52,12 +60,15 @@ class ShelfManager:
 
     def update_deterioration(self):
         #list through items and update deterioration value
-        for shelf in self.allowable_shelves:
-            shelf.update_deterioration()
+        for shelf_key in self.allowable_shelves:
+            self.allowable_shelves[shelf_key].update_deterioration()
         self.overflow_shelf.update_deterioration()
-        
 
-# define 3 allowable shelves with size of 1. and overflow shelves with size of 2
+    def remove_delivererd_order(self):
+        #list through items and remove delivered order
+        pass
+
+# Define 3 allowable shelves with size of 1. and overflow shelves with size of 2
 # put order with "HOT" temp
 # put order with "FROZEN" temp
 # put order with "COLD" temp
@@ -69,3 +80,18 @@ class ShelfManager:
 
 # put 1 more order with "HOT" temp
 # expected : raise no empty space exception
+
+# update 1 order value to -1
+# update 1 order status to delivered
+
+# after SHELF_MANAGEMENT_INTERVAL sec,
+# expected : orders with status delivered (or) value less than 0 are removed
+
+# put 1 order in HOT, 1 order in FROZEN, 2 order in overflow shelves
+# after SHELF_MANAGEMENT_INTERVAL sec,
+# expected : 1 COLD item from overflow shelves is put back to COLD allowable shelves
+
+# put 1 order in HOT, 1 order in FROZEN,1 order in COLD and 2 order in overflow shelves
+# after SHELF_MANAGEMENT_INTERVAL sec,
+# expected : random item from overflow sheles is dropped
+
