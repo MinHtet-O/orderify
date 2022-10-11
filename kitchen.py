@@ -6,6 +6,10 @@ import time
 from shelf_manager import *
 # TODO: add status field to Order
 
+# the time it takes to prepare for each order
+# the order is instantly cooked currently 
+PREP_TIME = 0
+
 class Kitchen:
     def __init__(self,order_queue: queue.Queue, delivery_queue: queue.Queue, shelf_manager: ShelfManager):
         self.orders = dict()
@@ -43,11 +47,10 @@ class Kitchen:
 
     def __process_order(self, order):
         self.delivery_queue.put(order)
-        # put on the shelf
-        time.sleep(0)
+        # Prepare/ Cook order
+        time.sleep(PREP_TIME)
         print("order "+ order.name+ " is accepted")
         order.update_status(OrderStatus.WAITING)
-        print("LEN {}".format(len(self.orders)))
 
 # TODO: refactor all exceptions in the single folder
 class InvalidOrderError(Exception):
@@ -56,6 +59,23 @@ class InvalidOrderError(Exception):
 class InvalidOrderID(Exception):
     pass
 
+# precondition
+# 1 create kitchen, shelf manager, one basic shelf and put 3 order
 
-#test: update the order status of failed order
-#expected: raise error
+# test positive: check the delivery queue
+# expected : There should be three order in the queue
+
+# test positive: get specific order with id
+# expected : correct ordr should be returned
+
+# test positive: try to get order that doesn't exit
+# expected : raise error: order not found
+
+# tes negative: update the order status or order that doesn't exits 
+# expected : raise error: order not found error
+
+# test negative: update the order status of failed order
+# expected: raise error
+
+# test positive: update the order status of normal order
+# expected: check with get_order, the order should have updated order status

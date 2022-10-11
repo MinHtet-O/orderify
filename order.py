@@ -1,5 +1,6 @@
 from http.client import ACCEPTED
 import string
+import threading
 from unicodedata import name
 from enum import Enum
 import json
@@ -52,12 +53,16 @@ class OrderStatus(str, Enum):
             raise InvalidOrderError("{} is not valid status".format(status))
         return status
         
-    
-
 class Order:
-    # TODO: remove method
     def update_status(self, order_status: OrderStatus):
+        self.lock.acquire()
         self.status = order_status
+        self.lock.release()
+
+    def update_inherent_value(self, inherent_value):
+        self.lock.acquire()
+        self.inherent_value = inherent_value
+        self.lock.release()
 
     def __init__(self,id: string, name: string, temp: ShelfTemp, shelfLife: int, decayRate: float):
         self.id = id
@@ -65,6 +70,7 @@ class Order:
         self.temp = temp
         self.shelf_life = shelfLife
         self.decay_rate = decayRate
+        self.lock = threading.Lock()
         self.update_status(OrderStatus.PENDING)
         self.inherent_value = None
         self.order_age = 0

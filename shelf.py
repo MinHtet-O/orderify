@@ -41,8 +41,10 @@ class Shelf:
                 decay_rate= order.decay_rate,
                 decay_mod=self.decay_mod
             )
-            order.inherent_value = value
+            order.update_inherent_value(value)
 
+    def remove_order(self, order):
+        pass
 
 def calc_inherent_value(shelf_life, order_age, decay_rate,decay_mod):
     value = (shelf_life - order_age - decay_rate* (order_age*decay_mod))/ shelf_life
@@ -52,5 +54,11 @@ def calc_inherent_value(shelf_life, order_age, decay_rate,decay_mod):
 class NoEmptySpace(Exception):
     pass
 
-# test: define shelf size of 5. add 6 orders to the shelf.
-# expect: return error in 6th order
+# test: define shelf size of 5. 
+# add 5 orders to the shelf.
+# expected: shelf is full
+
+# add 6 th orders to the shelf
+# expcted: raise no empty space exception
+
+# test: remove specific order

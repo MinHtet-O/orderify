@@ -4,6 +4,12 @@ import threading
 
 # TODO: add status field to Order
 
+# every DETORATION_TIMER sec, shelf manager will update detoration values for the orders
+DETORATION_TIMER = 1
+
+# every DETORATION_TIMER sec, shelf_life of each order will increase by SHELF_LIFE_INC
+SHELF_LIFE_INC = 10
+
 class ShelfManager:
     def __init__(self, allowable_shelves: list[Shelf], overflow_shelf: Shelf):
         self.allowable_shelves = allowable_shelves
@@ -15,9 +21,12 @@ class ShelfManager:
         for shelf in self.allowable_shelves:
             if shelf.temp == order.temp:
                 err = shelf.put_order(order)
+                if err == None:
+                    # the order is successfully put in the allowable shelf
+                    return
                 if err == NoEmptySpace:
-                    raise err
-                return
+                    # all allowable shelves are full
+                    break
         # put order in the overflow shelf
         err = self.overflow_shelf(order)
         if err == NoEmptySpace:
@@ -48,3 +57,15 @@ class ShelfManager:
         self.overflow_shelf.update_deterioration()
         
 
+# define 3 allowable shelves with size of 1. and overflow shelves with size of 2
+# put order with "HOT" temp
+# put order with "FROZEN" temp
+# put order with "COLD" temp
+# expected: each order is in respective shelf
+
+# put 2 more order with "HOT" temp
+# expected : they are placed in the allowable shelf
+# expected : all shelves are full
+
+# put 1 more order with "HOT" temp
+# expected : raise no empty space exception
