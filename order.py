@@ -4,6 +4,7 @@ import threading
 
 from enum import Enum
 import json
+from xmlrpc.client import Boolean
 
 class ShelfTemp(str, Enum):
     HOT = "HOT"
@@ -52,16 +53,6 @@ class OrderStatus(str, Enum):
         return status
         
 class Order:
-    def update_status(self, order_status: OrderStatus):
-        self.lock.acquire()
-        self.status = order_status
-        self.lock.release()
-
-    def update_inherent_value(self, inherent_value):
-        self.lock.acquire()
-        self.inherent_value = inherent_value
-        self.lock.release()
-
     def __init__(self,id: string, name: string, temp: ShelfTemp, shelfLife: int, decayRate: float):
         self.id = id
         self.name = name
@@ -72,6 +63,22 @@ class Order:
         self.update_status(OrderStatus.PENDING)
         self.inherent_value = None
         self.order_age = 0
+    
+    def check_spoiled(self) -> Boolean:
+        return self.inherent_value < 0
+
+    def check_delivered(self) -> Boolean:
+        return self.status == OrderStatus.DELIVERED
+
+    def update_status(self, order_status: OrderStatus):
+        self.lock.acquire()
+        self.status = order_status
+        self.lock.release()
+
+    def update_inherent_value(self, inherent_value):
+        self.lock.acquire()
+        self.inherent_value = inherent_value
+        self.lock.release()
 
     def __repr__(self):
         str = """Order: {}
