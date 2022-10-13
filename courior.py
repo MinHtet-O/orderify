@@ -1,3 +1,4 @@
+import queue
 import random
 import threading
 import time
@@ -5,22 +6,36 @@ from order import *
 import requests
 
 # TODO: let courior to know only order id and status
-def manage_couriers(delivery_queue):
-    while True:
-        order = delivery_queue.get()
-        threading.Thread(target=deliver, args=(order,) ).start()
-        if order == None:
-            break
 
-def deliver(order):
-    delivery_time = random.randrange(2, 6)
-    time.sleep(delivery_time)
-    print("Delivered {} after {} seconds \n".format(order.name, delivery_time))
-    update_status(order.id, OrderStatus.DELIVERED)
 
-def update_status(order_id, status: OrderStatus):
-    # extract the url as const
-    url = "http://127.0.0.1:5000/order/{}/status".format(order_id)
-    data = dict()
-    data['status'] = OrderStatus[status].value
-    res = requests.put(url, json = data)
+class CourierManager:
+    def __init__(self, delivery_queue: queue.Queue, min_deliver_duration = 2, max_deliver_duration = 6):
+        self.delivery_queue = delivery_queue
+        self.__min_delivery_duration = min_deliver_duration
+        self.__max_delivery_duration = max_deliver_duration
+
+    def __get_delivery_duration(self) -> int:
+        return random.randrange(self.__min_delivery_duration,self.__max_delivery_duration)
+
+    def __spawn_courior(self, order):
+        delivery_time = self.__get_delivery_duration()
+        time.sleep(delivery_time)
+        self.__pickup(order, delivery_time, OrderStatus.DELIVERED)
+
+    def __pickup(self, order, delivery_time, status: OrderStatus):
+        # TODO: extract the url as const
+        url = "http://127.0.0.1:5000/order/{}/status".format(order.id)
+        data = dict()
+        data['status'] = OrderStatus[status].value
+        res = requests.put(url, json = data)
+        if res.status_code == 200:
+            print("Courior: successfully pickedup {} after {} seconds \n".format(order.name, delivery_time))
+        else:
+            print("Courior: {} {}".format(order.name, res.content))
+
+    def init_manager_thread(self):
+        while True:
+            order = self.delivery_queue.get()
+            print("Courior: {} order received for delivery".format(order.name))
+            threading.Thread(target=self.__spawn_courior, args=(order,)).start()
+

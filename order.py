@@ -17,7 +17,7 @@ class ShelfTemp(str, Enum):
         # TODO: refactor as custom validator method
         if not 'temp' in json:
             raise InvalidOrderError("temp should not be empty")
-        
+
         temp = json['temp'].upper()
         try:
             temp = OrderStatus[temp]
@@ -26,16 +26,10 @@ class ShelfTemp(str, Enum):
         return temp
 
 class OrderStatus(str, Enum):
-    
-    # Order is pending to be accepted
-    PENDING = "PENDING"
-    # Order is accepted from kitchen
-    ACCEPTED = "ACCEPTED"
-    # Order is ready and waiting for delivery
-    WAITING = "WAITING"
-    # Order has delivered
+
+    PENDING = "PENDING" # Pending to be accepted from kitchen
+    WAITING = "WAITING" # Ready/ Waiting for delivery
     DELIVERED = "DELIVERED"
-    # Order has failed.
     FAILED = "FAILED"
 
     @staticmethod
@@ -51,7 +45,7 @@ class OrderStatus(str, Enum):
         except Exception as e:
             raise InvalidOrderError("{} is not valid status".format(status))
         return status
-        
+
 class Order:
     def __init__(self,id: string, name: string, temp: ShelfTemp, shelfLife: int, decayRate: float):
         self.id = id
@@ -60,56 +54,77 @@ class Order:
         self.shelf_life = shelfLife
         self.decay_rate = decayRate
         self.lock = threading.Lock()
-        self.update_status(OrderStatus.PENDING)
-        self.inherent_value = None
-        self.order_age = 0
-    
+        self.status = OrderStatus.PENDING
+        self.order_age = 1
+        self.inherent_value = 0
+        self.valid_status_trans = {
+            OrderStatus.PENDING: [OrderStatus.WAITING],
+            OrderStatus.WAITING: [OrderStatus.DELIVERED, OrderStatus.FAILED]
+        }
+
+    # TODO: refactor to spoiled and delivered
     def check_spoiled(self) -> Boolean:
         return self.inherent_value < 0
 
     def check_delivered(self) -> Boolean:
         return self.status == OrderStatus.DELIVERED
 
-    def update_status(self, order_status: OrderStatus):
+    def __verify_status_trans(self, current: OrderStatus, next: OrderStatus) -> Boolean:
+        valid_states = self.valid_status_trans[current]
+        return next in valid_states
+
+    def __verify_age_trans(self, current: int, new: int) -> Boolean:
+        return new > current
+
+    def update_status(self, new_status: OrderStatus):
+        if not self.__verify_status_trans(self.status, new_status):
+            raise InvalidOrderStatus("can not change order to {} which is already {}".format(new_status, self.status))
         self.lock.acquire()
-        self.status = order_status
+        self.status = new_status
         self.lock.release()
 
-    def update_inherent_value(self, inherent_value):
+    def update_age(self, new_order_age: int):
+        if not self.__verify_age_trans(self.order_age, new_order_age):
+            raise Exception("can not set order age smaller than current")
         self.lock.acquire()
-        self.inherent_value = inherent_value
+        self.order_age = new_order_age
+        self.lock.release()
+
+    def update_inherent_value(self, inherent_value: float):
+        self.lock.acquire()
+        print("{} value is about to update to {}".format(self.name, inherent_value))
+        self.inherent_value:float = inherent_value
         self.lock.release()
 
     def __repr__(self):
-        str = """Order: {}
-        name: {}
-        temp: {}
-        shelfLife: {}
-        decayRate: {}""".format(
+        str = "ID: {}, name: {}, temp: {}, value: {}".format(
             self.id,
             self.name,
             self.temp,
-            self.shelf_life,
-            self.decay_rate
+            self.inherent_value,
             )
         return str
 
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
+        return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
     @staticmethod
     def decode_json(json):
         # TODO: validate each fields and return appropriate error
         # TODO: refactor as custom validator method
-        
+        temp = json["temp"].upper()
         if not 'id' in json:
             raise InvalidOrderError("id should not be empty")
+
         id = json["id"]
         name = json["name"]
-        temp = json["temp"]
+        # TODO: error handling
+        # convert string to enum
+        temp: ShelfTemp = ShelfTemp[temp]
         shelf_life = json["shelfLife"]
-        decay_rate = json["decayRate"],
+        decay_rate = json["decayRate"]
+
         order = Order(id,name, temp, shelf_life, decay_rate)
         return order
 

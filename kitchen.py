@@ -1,87 +1,45 @@
-from unicodedata import name
-import queue
-import threading
-from order import *
-import time
 from shelf_manager import *
-# TODO: add status field to Order
+import queue
 
 # the time it takes to prepare for each order
-# the order is instantly cooked currently 
+# the order is instantly cooked currently
 PREP_TIME = 0
 
-class Kitchen:
-    def __init__(self,order_queue: queue.Queue, delivery_queue: queue.Queue, shelf_manager: ShelfManager):
-        self.orders:dict[str, Order] = {}
-        self.delivery_queue = delivery_queue
-        self.order_queue = order_queue
-        self.shelf_manager = shelf_manager
-        threading.Thread(target=self.__order_listener).start()
 
-    def update_order_status(self, id: string, status: OrderStatus):
-        if id not in self.orders:
+class Kitchen:
+    def __init__(self, delivery_queue: queue.Queue, shelf_manager: ShelfManager):
+        self.__orders: dict[str, Order] = {}
+        self.__delivery_queue = delivery_queue
+        self.__shelf_manager = shelf_manager
+
+    def update_order_status(self, id: string, new_status: OrderStatus) -> None:
+        if id not in self.__orders:
             raise InvalidOrderID("order id {} not exists".format(id))
-        order = self.orders[id]
-        if (order.status == OrderStatus.FAILED) and (status != OrderStatus.FAILED):
-            raise InvalidOrderStatus("order id {} has already failed".format(id))
-        order.update_status(status)
+        order = self.__orders[id]
+        # TODO: refactor as new exeception
+        if (order.status == OrderStatus.FAILED):
+            raise InvalidOrderStatus("{} has already failed".format(order.name))
+        if (order.status == OrderStatus.DELIVERED):
+            raise InvalidOrderStatus("{} has already delivered".format(order.name))
+        order.update_status(new_status)
+        if new_status == OrderStatus.DELIVERED:
+            self.__shelf_manager.remove_order(order.id)
+        return
 
     def put_order(self, order: Order):
-        self.orders[order.id] = order
-        self.shelf_manager.put_order(order)
-        self.order_queue.put(order)
-        order.update_status(OrderStatus.ACCEPTED)
-
-    def get_order(self, id):
-        if id not in self.orders.keys():
-            raise InvalidOrderID("order id {} not exists".format(id))
-        return self.orders[id]
-
-    def get_orders(self):
-        return self.orders
-
-    def __order_listener(self):
-        while True:
-            order = self.order_queue.get()
-            self.__process_order(order)
-
-    def __process_order(self, order):
-        self.delivery_queue.put(order)
-        # Prepare/ Cook order
-        time.sleep(PREP_TIME)
-        print("order "+ order.name+ " is accepted")
+        if order.id in self.__orders:
+            raise InvalidOrderError("Order id of {} already exits".format(order.id))
+        self.__orders[order.id] = order
+        self.__delivery_queue.put(order)
+        self.__shelf_manager.put_order(order)
         order.update_status(OrderStatus.WAITING)
 
-# TODO: refactor all exceptions in the single folder
-class InvalidOrderError(Exception):
-    pass
+    def get_order(self, id):
+        if id not in self.__orders.keys():
+            raise InvalidOrderID("order id {} not exists".format(id))
+        return self.__orders[id]
 
-class InvalidOrderID(Exception):
-    pass
+    #TODO: test properly
+    def get_orders(self):
+        return self.__orders
 
-# precondition
-# 1 create kitchen, shelf manager, one basic shelf and put 3 order
-
-# test positive: check the delivery queue
-# expected : There should be three order in the queue
-
-# test positive: get specific order with id
-# expected : correct ordr should be returned
-
-# test positive: try to get order that doesn't exit
-# expected : raise error: order not found
-
-# test negative: update the order status or order that doesn't exits 
-# expected : raise error: order not found error
-
-# test negative: update the order status of failed order
-# expected: raise error
-
-# test positive: update the order status of normal order
-# expected: check with get_order, the order should have updated order status
-
-# set PREP_TIME to x and DELIVERY_TIME to y
-# put order
-# expected: status becomes pending immediately
-# expected: status becomes accepted after x sec
-# expected: status becomes delivered after y sec

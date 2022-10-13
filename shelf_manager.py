@@ -1,109 +1,132 @@
-from ast import Or
-from operator import index
-from time import time
-from typing import Generator, List
-from xmlrpc.client import Boolean
 from shelf import *
+from errors import *
 
-
-SHELF_TICK_INTERVAL = 1
+SHELF_MANAGEMENT_TICK = 1
 
 class ShelfManager:
-    def __init__(self, allowable_shelves: dict[ShelfTemp, Shelf], overflow_shelf: Shelf):
-        self.allowable_shelves = allowable_shelves
-        self.overflow_shelf = overflow_shelf
-        
-    def allowable_shelves_full(self)-> Boolean:
-        for key in self.allowable_shelves:
-            if not self.allowable_shelves[key].check_full():
+    def __init__(self, event: threading.Event):
+        self.event = event
+        self.__allowable_shelves:dict[ShelfTemp, Shelf] = {}
+        self.__overflow_shelf: Shelf = None
+
+    def add_allowable_shelf(self, cap: int, temp: ShelfTemp):
+        if self.__temp_shelf_exit(temp):
+            raise ShelfAlreadyExits("{} shelf already exits".format(temp))
+        self.__allowable_shelves[temp] = Shelf(cap, temp)
+
+    def add_overflow_shelf(self, cap):
+        if self.__overflow_shelf is not None:
+            raise ShelfAlreadyExits("overflow shelf already exits")
+        self.__overflow_shelf = Shelf(cap, None)
+
+    def all_shelves_full(self) -> Boolean:
+        return self.__overflow_shelf_full() and self.__allowable_shelves_full()
+
+    def __allowable_shelves_full(self)-> Boolean:
+        for key in self.__allowable_shelves:
+            if not self.__allowable_shelves[key].check_full():
                 return False
         return True
 
-    def overflow_shelf_full(self) -> Boolean:
-        return self.overflow_shelf.check_full()
+    def __overflow_shelf_full(self) -> Boolean:
+        return self.__overflow_shelf.check_full()
 
-    def all_shelves_full(self) -> Boolean:
-        return self.overflow_shelf_full() and self.allowable_shelves_full()
-        
     def peek_orders(self, temp: ShelfTemp) -> List[Order]:
         if temp == None:
-            return self.overflow_shelf.get_orders()
-
-        if not self.temp_shelf_exit(temp):
+            return self.__overflow_shelf.get_orders()
+        if not self.__temp_shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for temp {}".format(temp))
-        return self.allowable_shelves[temp].get_orders()
-        
+        return self.__allowable_shelves[temp].get_orders()
+
     # TODO: change method name
-    def temp_shelf_exit(self, temp) -> Boolean:
-        if temp in self.allowable_shelves:
+    def __temp_shelf_exit(self, temp) -> Boolean:
+        if temp in self.__allowable_shelves:
             return True
         return False
-        
+
     def put_order(self, order: Order):
         temp = order.temp
-        
-        if not self.temp_shelf_exit(temp):
+        if not self.__temp_shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for this order temp {}".format(temp))
-        
-        if not self.allowable_shelves[temp].check_full():
-            self.allowable_shelves[temp].put_order(order)
+
+        if not self.__allowable_shelves[temp].check_full():
+            self.__allowable_shelves[temp].put_order(order)
             return
 
-        if not self.overflow_shelf.check_full():
-            self.overflow_shelf.put_order(order)
+        if not self.__overflow_shelf.check_full():
+            self.__overflow_shelf.put_order(order)
             return
 
-        raise NoEmptySpaceErr("all shelves are full")
+        raise NoEmptySpaceErr("no empty space in {} temp shelf".format(order.temp))
 
-    # TODO: init function from the outside caller
-    def init_manager_thread(self):
+    def init_manager_thread(self, event):
         while True:
-            time.sleep(SHELF_TICK_INTERVAL)
+            event.wait()
+            self.__update_deterioration()
             self.manage_shelves()
-            self.update_deterioration()
-                   
+            event.clear()
+
     def manage_shelves(self):
-        orders = self.order_iterator()
+        self.__discard_spoiled_orders()
+        self.__order_replacement()
+
+    def remove_order(self, order_id):
+        orders = self.__order_iterator()
         for (index, order, shelf ) in orders:
-            if order.check_spoiled() or order.check_delivered():
+            if order.id == order_id:
+                print("ShelfManager: {} has is about to be removed from shelf".format(order.name))
+                shelf.remove_order(index)
+                break
+        raise InvalidOrderID("order id {} not exists".format(id))
+
+
+    # discard spoiled/ delivered orders
+    def __discard_spoiled_orders(self):
+        orders = self.__order_iterator()
+        for (index, order, shelf ) in orders:
+            if order.check_spoiled():
+                print("ShelfManager: {} has spoiled and about to be removed from shelf".format(order.name))
+                order.update_status(OrderStatus.FAILED)
                 shelf.remove_order(index)
                 continue
 
-        if self.overflow_shelf_full():
-            if self.allowable_shelves_full():
-                self.overflow_shelf.remove_random_order()
-            else:
-                # move order from overflow to allowable shelf
-                for index, order in enumerate(self.overflow_shelf.get_orders()):
-                    shelf =  self.allowable_shelves[order.temp]
-                    if shelf.check_full():
-                        continue
-                    order = self.overflow_shelf.remove_order(index)
-                    shelf.put_order(order)
-                    break
+        if self.all_shelves_full():
+            self.__overflow_shelf.remove_random_order()
 
+    def __order_replacement(self):
+        if self.__overflow_shelf_full() and (not self.__allowable_shelves_full()):
+                # move orders from overflow to allowable shelf
+            for index, order in enumerate(self.__overflow_shelf.get_orders()):
+                shelf = self.__allowable_shelves[order.temp]
+                if shelf.check_full():
+                    continue
+                print("ShelfManager: {} with {} has moved to allowable shelf".format(order.name, order.temp))
+                order = self.__overflow_shelf.remove_order(index)
+                shelf.put_order(order)
+                break
 
-    def update_deterioration(self):
+    def __update_deterioration(self):
         # update deterioration value for each shelf
-        shelves = self.shelf_iterator()
+        shelves = self.__shelf_iterator()
         for shelf in shelves:
             shelf.update_deterioration()
 
     # iterate all the orders within the shelves
-    def order_iterator(self) -> Generator[int, Order, Shelf]:
-        shelves = self.shelf_iterator()
-        for shelf in shelves(self):
+    def __order_iterator(self):
+        shelves = self.__shelf_iterator()
+        for shelf in shelves:
             for index, order in enumerate(shelf.get_orders()):
                 yield (index, order, shelf)
 
     # iterate all shelves
-    def shelf_iterator(self) -> Generator[Shelf]:
-        for key in self.allowable_shelves:
-            yield self.allowable_shelves[key]
-        yield self.overflow_shelf
-            
+    def __shelf_iterator(self):
+        for key in self.__allowable_shelves:
+            yield self.__allowable_shelves[key]
+        yield self.__overflow_shelf
 
 
+class ShelfAlreadyExits(Exception):
+    pass
 
 # Define 3 allowable shelves with size of 1. and overflow shelves with size of 2
 # put order with "HOT" temp

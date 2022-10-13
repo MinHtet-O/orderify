@@ -6,16 +6,39 @@ from kitchen import *
 from flask import Flask, jsonify, request
 from client.generate_orders import *
 
+# consts
+CLOCK_INTERVAL = 1
+
+# init events
+shef_managment_event = threading.Event()
+
+# tick events every clock_interval
+def tick_events():
+    while True:
+        time.sleep(CLOCK_INTERVAL)
+        shef_managment_event.set()
+
+# init shelf manager
+shelf_manager = ShelfManager(shef_managment_event)
+shelf_manager.add_allowable_shelf(1, ShelfTemp.HOT)
+shelf_manager.add_allowable_shelf(1, ShelfTemp.COLD)
+shelf_manager.add_allowable_shelf(1, ShelfTemp.FROZEN)
+shelf_manager.add_overflow_shelf(1)
+
+# init kitchen
 delivery_queue = queue.Queue()
-order_queue = queue.Queue()
+kitchen = Kitchen(delivery_queue, shelf_manager)
 
-threading.Thread(target=manage_couriers, args=(delivery_queue,) ).start()
+# init courior manager
+courior_manager = CourierManager(delivery_queue,15,20)
+
+# init threads
+threading.Thread(target=courior_manager.init_manager_thread).start()
+threading.Thread(target=shelf_manager.init_manager_thread, args=(shef_managment_event,)).start()
 threading.Thread(target=init_order_client).start()
+threading.Thread(target=tick_events).start()
 
-kitchen = Kitchen(order_queue, delivery_queue)
 app = Flask(__name__)
-
-
 @app.route('/order',methods = ['POST'])
 def post_order():
     try:
@@ -23,9 +46,11 @@ def post_order():
         order = Order.decode_json(json)
         kitchen.put_order(order)
     except InvalidOrderError as e:
-        return "invalid order: {msg}".format(msg = e), 500
-    except:
-        return 'unknown error', 500
+        return "Invalid order: {msg}".format(msg = e), 500
+    except NoEmptySpaceErr as e:
+        return '{}'.format(e), 500
+    # except:
+    #     return 'unknown error', 500
     return order.id, 200
 
 @app.route('/order/<string:id>/status',methods = ['PUT'])
@@ -39,8 +64,8 @@ def update_order_status(id):
     except InvalidOrderStatus as e:
         return "invalid order status: {}".format(e), 500
     except:
-        return 'unknown error', 500
-    return '', 200
+        return "unknown error", 500
+    return '',200
 
 @app.route('/order/<string:id>/',methods = ['GET'])
 def get_order(id):
@@ -59,7 +84,7 @@ def get_orders():
                 )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
 
 # TODO: add logger for both debug and info
 # TODO: response proper error json response
