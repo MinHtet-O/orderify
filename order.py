@@ -1,10 +1,12 @@
-from http.client import ACCEPTED
 import string
 import threading
 
 from enum import Enum
 import json
 from xmlrpc.client import Boolean
+
+from errors import InvalidOrderStatus, InvalidOrderAge, InvalidOrderInherentValue
+
 
 def lock_attr(func):
     def wrapper(*args, **kwargs):
@@ -76,6 +78,8 @@ class Order:
         return self.status == OrderStatus.DELIVERED
 
     def __verify_status_trans(self, current: OrderStatus, next: OrderStatus) -> Boolean:
+        if current not in self.__status_trans:
+            return False
         valid_states = self.__status_trans[current]
         return next in valid_states
 
@@ -141,8 +145,6 @@ class Order:
     @property
     @lock_attr
     def temp(self):
-        print("inside temp getter")
-        print(self.__temp)
         return self.__temp
 
     @temp.setter
@@ -178,7 +180,6 @@ class Order:
     @status.setter
     @lock_attr
     def status(self, status):
-        print("inside status setter")
         if not self.__verify_status_trans(current= self.__status,next= status):
             raise InvalidOrderStatus("can not change order to {} which is already {}".format(status, self.__status))
         self.__status = status
@@ -192,7 +193,7 @@ class Order:
     @lock_attr
     def order_age(self, order_age):
         if not self.__verify_age_trans(current= self.__order_age, new = order_age):
-            raise Exception("can not set order age smaller than current")
+            raise InvalidOrderAge("can not set order age smaller than current")
         self.__order_age = order_age
 
     @property
@@ -204,14 +205,10 @@ class Order:
     @lock_attr
     def inherent_value(self, inherent_value):
         if not self.__verify_inherent_value_trans(current= self.__inherent_value, new = inherent_value):
-            raise Exception("can not set inherent bigger than current")
+            raise InvalidOrderInherentValue("can not set inherent bigger than current")
         print("{} value is about to update to {}".format(self.__name, inherent_value))
         self.__inherent_value = inherent_value
 
-class InvalidOrderError(Exception):
-    pass
-class InvalidOrderStatus(Exception):
-    pass
 
 class OrderEncoder(json.JSONEncoder):
     def default(self, obj):

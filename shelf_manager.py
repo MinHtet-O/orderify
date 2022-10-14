@@ -8,6 +8,7 @@ class ShelfManager:
         self.__allowable_shelves:dict[ShelfTemp, Shelf] = {}
         self.__overflow_shelf: Shelf = None
 
+    # TODO: refactor into shelf factory method
     def add_allowable_shelf(self, cap: int, temp: ShelfTemp):
         if self.__shelf_exit(temp):
             raise ShelfAlreadyExits("{} shelf already exits".format(temp))
@@ -127,34 +128,3 @@ class ShelfManager:
         for key in self.__allowable_shelves:
             yield self.__allowable_shelves[key]
         yield self.__overflow_shelf
-
-
-class ShelfAlreadyExits(Exception):
-    pass
-
-# Define 3 allowable shelves with size of 1. and overflow shelves with size of 2
-# put order with "HOT" temp
-# put order with "FROZEN" temp
-# put order with "COLD" temp
-# expected: each order is in respective shelf
-
-# put 2 more order with "HOT" temp
-# expected : they are placed in the allowable shelf
-# expected : all shelves are full
-
-# put 1 more order with "HOT" temp
-# expected : raise no empty space exception
-
-# update 1 order value to -1
-# update 1 order status to delivered
-
-# after SHELF_MANAGEMENT_INTERVAL sec,
-# expected : orders with status delivered (or) value less than 0 are removed
-
-# put 1 order in HOT, 1 order in FROZEN, 2 order in overflow shelves
-# after SHELF_MANAGEMENT_INTERVAL sec,
-# expected : 1 COLD item from overflow shelves is put back to COLD allowable shelves
-
-# put 1 order in HOT, 1 order in FROZEN,1 order in COLD and 2 order in overflow shelves
-# after SHELF_MANAGEMENT_INTERVAL sec,
-# expected : random item from overflow sheles is dropped

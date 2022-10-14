@@ -1,7 +1,4 @@
 import unittest
-from shelf import *
-from shelf_manager import *
-import queue
 from kitchen import *
 
 class ShelfTest(unittest.TestCase):

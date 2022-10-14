@@ -1,13 +1,12 @@
 import queue
 import random
-import threading
 import time
+
+from config import API_URL
 from order import *
 import requests
 
-# TODO: let courior to know only order id and status
-
-
+# TODO: let courior knows only order id and status
 class CourierManager:
     def __init__(self, delivery_queue: queue.Queue, min_deliver_duration = 2, max_deliver_duration = 6):
         self.delivery_queue = delivery_queue
@@ -23,11 +22,10 @@ class CourierManager:
         self.__pickup(order, delivery_time, OrderStatus.DELIVERED)
 
     def __pickup(self, order, delivery_time, status: OrderStatus):
-        # TODO: extract the url as const
-        url = "http://127.0.0.1:5000/order/{}/status".format(order.id)
+        status_url = "{}/order/{}/status".format(API_URL, order.id)
         data = dict()
         data['status'] = OrderStatus[status].value
-        res = requests.put(url, json = data)
+        res = requests.put(status_url, json = data)
         if res.status_code == 200:
             print("Courior: successfully pickedup {} after {} seconds \n".format(order.name, delivery_time))
         else:

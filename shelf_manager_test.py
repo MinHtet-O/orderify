@@ -1,8 +1,5 @@
 import time
-from lib2to3.pgen2.token import COLON
-from sre_constants import ANY
 import unittest
-from shelf import *
 from shelf_manager import *
 import threading
 

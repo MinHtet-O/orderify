@@ -1,10 +1,6 @@
 from shelf_manager import *
 import queue
 
-# the time it takes to prepare for each order
-# the order is instantly cooked currently
-PREP_TIME = 0
-
 
 class Kitchen:
     def __init__(self, delivery_queue: queue.Queue, shelf_manager: ShelfManager):

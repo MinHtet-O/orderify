@@ -1,6 +1,3 @@
-import threading
-import queue
-from order import *
 from courior import *
 from kitchen import *
 from flask import Flask, jsonify, request
