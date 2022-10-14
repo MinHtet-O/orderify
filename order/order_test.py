@@ -1,11 +1,13 @@
 
 # state transition
 import unittest
-from shelf import *
+from errors import *
+from order import *
+from temp import *
 
 class OrderTest(unittest.TestCase):
     def setUp(self):
-        self.order = Order("1", "Pizza",ShelfTemp.HOT,300,0.45)
+        self.order = Order("1", "Pizza",Temp.HOT,300,0.45)
 
     def test_update_status(self):
         # Expect: initial state pending

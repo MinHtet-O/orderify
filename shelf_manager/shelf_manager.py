@@ -1,16 +1,14 @@
-from shelf import *
+from shelf.shelf import *
 from errors import *
-
-SHELF_MANAGEMENT_TICK = 1
 
 class ShelfManager:
     def __init__(self):
-        self.__allowable_shelves:dict[ShelfTemp, Shelf] = {}
+        self.__allowable_shelves:dict[Temp, Shelf] = {}
         self.__overflow_shelf: Shelf = None
 
     # TODO: refactor into shelf factory method
-    def add_allowable_shelf(self, cap: int, temp: ShelfTemp):
-        if self.__shelf_exit(temp):
+    def add_allowable_shelf(self, cap: int, temp: Temp):
+        if self.__allowable_shelf_exit(temp):
             raise ShelfAlreadyExits("{} shelf already exits".format(temp))
         self.__allowable_shelves[temp] = Shelf(cap, temp)
 
@@ -19,39 +17,37 @@ class ShelfManager:
             raise ShelfAlreadyExits("overflow shelf already exits")
         self.__overflow_shelf = Shelf(cap, None)
 
-    def all_shelves_full(self) -> Boolean:
+    def all_shelves_full(self) -> bool:
         return self.__overflow_shelf_full() and self.__allowable_shelves_full()
 
-    def __allowable_shelves_full(self)-> Boolean:
+    def __allowable_shelves_full(self)-> bool:
         for key in self.__allowable_shelves:
             if not self.__allowable_shelves[key].check_full():
                 return False
         return True
 
-    def __overflow_shelf_full(self) -> Boolean:
+    def __overflow_shelf_full(self) -> bool:
         return self.__overflow_shelf.check_full()
 
-    def peek_allowable_shelf(self, temp: ShelfTemp) -> List[Order]:
+    def peek_allowable_shelf(self, temp: Temp) -> List[Order]:
         if temp == None:
             return TempNotMatchErr("{} is not valid temperature").__format__(temp)
-        if not self.__shelf_exit(temp):
+        if not self.__allowable_shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for temp {}".format(temp))
         return self.__allowable_shelves[temp].get_orders()
 
     def peek_overflow_shelf(self) -> List[Order]:
         return self.__overflow_shelf.get_orders()
 
-
-    # TODO: change method name
-    def __shelf_exit(self, temp) -> Boolean:
+    def __allowable_shelf_exit(self, temp) -> bool:
         if temp in self.__allowable_shelves:
             return True
         return False
 
-    def put_order(self, order: Order):
+    def put_order(self, order: Order) -> Exception:
         temp = order.temp
 
-        if not self.__shelf_exit(temp):
+        if not self.__allowable_shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for this order temp {}".format(temp))
 
         if not self.__allowable_shelves[temp].check_full():
@@ -62,7 +58,7 @@ class ShelfManager:
             self.__overflow_shelf.put_order(order)
             return
 
-        raise NoEmptySpaceErr("no empty space in {} temp shelf".format(order.temp))
+        return NoEmptySpaceErr("no empty space for order {}".format(order.name))
 
     def init_manager_thread(self, event):
         while True:
@@ -83,7 +79,6 @@ class ShelfManager:
                 shelf.remove_order(index)
                 return
         raise InvalidOrderID("order id {} not exists".format(id))
-
 
     # discard spoiled/ delivered orders
     def __discard_spoiled_orders(self):

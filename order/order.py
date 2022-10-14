@@ -1,11 +1,10 @@
 import string
 import threading
 
-from enum import Enum
 import json
-from xmlrpc.client import Boolean
-
-from errors import InvalidOrderStatus, InvalidOrderAge, InvalidOrderInherentValue
+from errors import InvalidOrderStatus, InvalidOrderAge, InvalidOrderInherentValue, InvalidOrderError
+from order.order_status import OrderStatus
+from order.temp import Temp
 
 
 def lock_attr(func):
@@ -14,48 +13,8 @@ def lock_attr(func):
             return func(*args, **kwargs)
     return wrapper
 
-class ShelfTemp(str, Enum):
-    HOT = "HOT"
-    COLD = "COLD"
-    FROZEN = "FROZEN"
-
-    @staticmethod
-    def decode_json(json):
-        # TODO: validate each fields and return appropriate error
-        # TODO: refactor as custom validator method
-        if not 'temp' in json:
-            raise InvalidOrderError("temp should not be empty")
-
-        temp = json['temp'].upper()
-        try:
-            temp = OrderStatus[temp]
-        except Exception as e:
-            raise InvalidOrderError("{} is not valid temp".format(temp))
-        return temp
-
-class OrderStatus(str, Enum):
-
-    PENDING = "PENDING" # Pending to be accepted from kitchen
-    WAITING = "WAITING" # Ready/ Waiting for delivery
-    DELIVERED = "DELIVERED"
-    FAILED = "FAILED"
-
-    @staticmethod
-    def decode_json(json):
-        # TODO: validate each fields and return appropriate error
-        # TODO: refactor as custom validator method
-        if not 'status' in json:
-            raise InvalidOrderError("status should not be empty")
-        # TODO: throw invalid status error
-        status = json['status'].upper()
-        try:
-            status = OrderStatus[status]
-        except Exception as e:
-            raise InvalidOrderError("{} is not valid status".format(status))
-        return status
-
 class Order:
-    def __init__(self,id: string, name: string, temp: ShelfTemp, shelfLife: int, decayRate: float):
+    def __init__(self, id: string, name: string, temp: Temp, shelfLife: int, decayRate: float):
         self.__id = id
         self.__name = name
         self.__temp = temp
@@ -65,28 +24,27 @@ class Order:
         self.__order_age = 0
         self.__inherent_value = 1
         self.__status_trans = {
-            OrderStatus.PENDING: [OrderStatus.WAITING, OrderStatus.FAILED],
+            OrderStatus.PENDING: [OrderStatus.WAITING, OrderStatus.FAILED, OrderStatus.REJECTED],
             OrderStatus.WAITING: [OrderStatus.DELIVERED, OrderStatus.FAILED]
         }
         self.lock = threading.Lock()
 
-    # TODO: refactor to spoiled and delivered
-    def spoiled(self) -> Boolean:
+    def spoiled(self) -> bool:
         return self.inherent_value < 0
 
-    def delivered(self) -> Boolean:
+    def delivered(self) -> bool:
         return self.status == OrderStatus.DELIVERED
 
-    def __verify_status_trans(self, current: OrderStatus, next: OrderStatus) -> Boolean:
+    def __verify_status_trans(self, current: OrderStatus, next: OrderStatus) -> bool:
         if current not in self.__status_trans:
             return False
         valid_states = self.__status_trans[current]
         return next in valid_states
 
-    def __verify_age_trans(self, current: int, new: int) -> Boolean:
+    def __verify_age_trans(self, current: int, new: int) -> bool:
         return new > current
 
-    def __verify_inherent_value_trans(self, current: int, new: int) -> Boolean:
+    def __verify_inherent_value_trans(self, current: int, new: int) -> bool:
         return new < current
 
     def __repr__(self):
@@ -105,17 +63,22 @@ class Order:
 
     @staticmethod
     def decode_json(json):
-        # TODO: validate each fields and return appropriate error
         # TODO: refactor as custom validator method
-        temp = json["temp"].upper()
         if not 'id' in json:
-            raise InvalidOrderError("id should not be empty")
+            raise InvalidOrderError("there is no id field")
+        if not 'name' in json:
+            raise InvalidOrderError("there is no name field")
+        if not 'temp' in json:
+            raise InvalidOrderError("there is no temp field")
+        if not 'shelfLife' in json:
+            raise InvalidOrderError("there is no shelfLife field")
+        if not 'decayRate' in json:
+            raise InvalidOrderError("there is no decayRate field")
 
+        temp = json["temp"].upper()
         id = json["id"]
         name = json["name"]
-        # TODO: error handling
-        # convert string to enum
-        temp: ShelfTemp = ShelfTemp[temp]
+        temp: Temp = Temp[temp]
         shelf_life = json["shelfLife"]
         decay_rate = json["decayRate"]
 

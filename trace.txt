@@ -1,0 +1,331 @@
+ * Serving Flask app 'main'
+ * Debug mode: off
+Shelf: Banana Split has successfully placed in FROZEN shelf
+Courior: Banana Split order received for delivery
+Banana Split value is about to update to -1.445
+ShelfManager: Banana Split has spoiled and about to be removed from shelf
+FROZEN Shelf: Banana Split is removed
+Shelf: McFlury has successfully placed in FROZEN shelf
+Courior: McFlury order received for delivery
+Shelf: Acai Bowl has successfully placed in COLD shelf
+Courior: Acai Bowl order received for delivery
+Acai Bowl value is about to update to 0.84337349
+McFlury value is about to update to 0.888
+Shelf: Yogurt has successfully placed in overflow shelf
+Courior: Yogurt order received for delivery
+Client: b'no empty space for order Chocolate Gelato'
+Acai Bowl value is about to update to 0.68674699
+McFlury value is about to update to 0.776
+Yogurt value is about to update to 0.80152091
+Client: b'no empty space for order Cobb Salad'
+Client: b'no empty space for order Cottage Cheese'
+Acai Bowl value is about to update to 0.53012048
+McFlury value is about to update to 0.664
+Yogurt value is about to update to 0.60304183
+Client: b'no empty space for order Coke'
+Client: b'no empty space for order Snow Cone'
+Acai Bowl value is about to update to 0.37349398
+McFlury value is about to update to 0.552
+Yogurt value is about to update to 0.40456274
+ShelfManager: McFlury has is about to be removed from shelf
+FROZEN Shelf: McFlury is removed
+Courior: successfully pickedup McFlury after 4 seconds
+Shelf: Pad See Ew has successfully placed in HOT shelf
+Courior: Pad See Ew order received for delivery
+Courior: Banana Split b'invalid order status: can not change order to DELIVERED which is already FAILED'
+Shelf: Chunky Monkey has successfully placed in FROZEN shelf
+Courior: Chunky Monkey order received for delivery
+Pad See Ew value is about to update to 0.75428571
+Acai Bowl value is about to update to 0.21686747
+Chunky Monkey value is about to update to 0.78
+Yogurt value is about to update to 0.20608365
+None Shelf: Yogurt is removed
+Courior: Yogurt b'invalid order id: order id <built-in function id> not exists'
+Shelf: Beef Stew has successfully placed in overflow shelf
+Courior: Beef Stew order received for delivery
+ShelfManager: Acai Bowl has is about to be removed from shelf
+COLD Shelf: Acai Bowl is removed
+Courior: successfully pickedup Acai Bowl after 5 seconds
+Shelf: Cheese has successfully placed in COLD shelf
+Courior: Cheese order received for delivery
+Pad See Ew value is about to update to 0.50857143
+Cheese value is about to update to 0.85882353
+Chunky Monkey value is about to update to 0.56
+Beef Stew value is about to update to 0.65339806
+None Shelf: Beef Stew is removed
+Shelf: Spinach Omelet has successfully placed in overflow shelf
+Courior: Spinach Omelet order received for delivery
+Client: b'no empty space for order Beef Hash'
+Pad See Ew value is about to update to 0.26285714
+Cheese value is about to update to 0.71764706
+Chunky Monkey value is about to update to 0.34
+Spinach Omelet value is about to update to 0.70521739
+None Shelf: Spinach Omelet is removed
+Shelf: Pork Chop has successfully placed in overflow shelf
+Courior: Pork Chop order received for delivery
+ShelfManager: Cheese has is about to be removed from shelf
+COLD Shelf: Cheese is removed
+Courior: successfully pickedup Cheese after 2 seconds
+Shelf: Kale Salad has successfully placed in COLD shelf
+Courior: Kale Salad order received for delivery
+Pad See Ew value is about to update to 0.01714286
+Kale Salad value is about to update to 0.85
+Chunky Monkey value is about to update to 0.12
+Pork Chop value is about to update to 0.64
+None Shelf: Pork Chop is removed
+Courior: Beef Stew b'invalid order id: order id <built-in function id> not exists'
+Shelf: Fresh Fruit has successfully placed in overflow shelf
+Courior: Fresh Fruit order received for delivery
+Client: b'no empty space for order Cranberry Salad'
+Pad See Ew value is about to update to -0.22857143
+Kale Salad value is about to update to 0.7
+Chunky Monkey value is about to update to -0.1
+Fresh Fruit value is about to update to 0.81190476
+ShelfManager: Pad See Ew has spoiled and about to be removed from shelf
+HOT Shelf: Pad See Ew is removed
+ShelfManager: Chunky Monkey has spoiled and about to be removed from shelf
+FROZEN Shelf: Chunky Monkey is removed
+Courior: Pad See Ew b'invalid order status: can not change order to DELIVERED which is already FAILED'
+Shelf: Fudge Ice Cream Cake has successfully placed in FROZEN shelf
+Courior: Fudge Ice Cream Cake order received for delivery
+Courior: Chunky Monkey b'invalid order status: can not change order to DELIVERED which is already FAILED'
+Client: b'no empty space for order Mint Chocolate Ice Cream'
+Kale Salad value is about to update to 0.55
+Fudge Ice Cream Cake value is about to update to 0.89228916
+Fresh Fruit value is about to update to 0.62380952
+Courior: Spinach Omelet b'invalid order id: order id <built-in function id> not exists'
+Shelf: Vegan Pizza has successfully placed in HOT shelf
+Courior: Vegan Pizza order received for delivery
+Client: b'no empty space for order Orange Chicken'
+Vegan Pizza value is about to update to 0.745
+Kale Salad value is about to update to 0.4
+Fudge Ice Cream Cake value is about to update to 0.78457831
+Fresh Fruit value is about to update to 0.43571429
+None Shelf: Fresh Fruit is removed
+Shelf: MeatLoaf has successfully placed in overflow shelf
+Courior: MeatLoaf order received for delivery
+Client: b'no empty space for order Milk'
+Vegan Pizza value is about to update to 0.49
+Kale Salad value is about to update to 0.25
+Fudge Ice Cream Cake value is about to update to 0.67686747
+MeatLoaf value is about to update to 0.71830986
+None Shelf: MeatLoaf is removed
+Courior: Pork Chop b'invalid order id: order id <built-in function id> not exists'
+Shelf: Pastrami Sandwich has successfully placed in overflow shelf
+Courior: Pastrami Sandwich order received for delivery
+ShelfManager: Kale Salad has is about to be removed from shelf
+COLD Shelf: Kale Salad is removed
+Courior: successfully pickedup Kale Salad after 5 seconds
+Shelf: Arugula has successfully placed in COLD shelf
+Courior: Arugula order received for delivery
+Vegan Pizza value is about to update to 0.235
+Arugula value is about to update to 0.84820717
+Fudge Ice Cream Cake value is about to update to 0.56915663
+Pastrami Sandwich value is about to update to 0.58947368
+None Shelf: Pastrami Sandwich is removed
+Courior: Fresh Fruit b'invalid order id: order id <built-in function id> not exists'
+Shelf: Pickles has successfully placed in overflow shelf
+Courior: Pickles order received for delivery
+Client: b'no empty space for order Chicken'
+Vegan Pizza value is about to update to -0.02
+Arugula value is about to update to 0.69641434
+Fudge Ice Cream Cake value is about to update to 0.46144578
+Pickles value is about to update to 0.81698842
+ShelfManager: Vegan Pizza has spoiled and about to be removed from shelf
+HOT Shelf: Vegan Pizza is removed
+ShelfManager: Fudge Ice Cream Cake has is about to be removed from shelf
+FROZEN Shelf: Fudge Ice Cream Cake is removed
+Courior: successfully pickedup Fudge Ice Cream Cake after 5 seconds
+Courior: Vegan Pizza b'invalid order status: can not change order to DELIVERED which is already FAILED'
+Shelf: Cookie Dough has successfully placed in FROZEN shelf
+Courior: Cookie Dough order received for delivery
+Shelf: Hamburger has successfully placed in HOT shelf
+Courior: Hamburger order received for delivery
+Hamburger value is about to update to 0.7555
+Arugula value is about to update to 0.54462151
+Cookie Dough value is about to update to 0.9425
+Pickles value is about to update to 0.63397683
+None Shelf: Pickles is removed
+Shelf: French Fries has successfully placed in overflow shelf
+Courior: French Fries order received for delivery
+Client: b'no empty space for order Ice'
+Hamburger value is about to update to 0.511
+Arugula value is about to update to 0.39282869
+Cookie Dough value is about to update to 0.885
+French Fries value is about to update to 0.68090909
+None Shelf: French Fries is removed
+Courior: MeatLoaf b'invalid order id: order id <built-in function id> not exists'
+Shelf: Carne Asada has successfully placed in overflow shelf
+Courior: Carne Asada order received for delivery
+ShelfManager: Hamburger has is about to be removed from shelf
+HOT Shelf: Hamburger is removed
+Courior: successfully pickedup Hamburger after 2 seconds
+Client: b'no empty space for order Sherbet'
+Arugula value is about to update to 0.24103586
+Cookie Dough value is about to update to 0.8275
+Carne Asada value is about to update to 0.67297297
+ShelfManager: Carne Asada with HOT has moved to allowable shelf
+None Shelf: Carne Asada is removed
+Shelf: Carne Asada has successfully placed in HOT shelf
+Courior: Pastrami Sandwich b'invalid order id: order id <built-in function id> not exists'
+Shelf: Orange Sorbet has successfully placed in overflow shelf
+Courior: Orange Sorbet order received for delivery
+ShelfManager: Arugula has is about to be removed from shelf
+COLD Shelf: Arugula is removed
+Courior: successfully pickedup Arugula after 5 seconds
+Carne Asada value is about to update to 0.53783784
+Cookie Dough value is about to update to 0.77
+Orange Sorbet value is about to update to 0.58181818
+Client: b'no empty space for order Frosty'
+Courior: Pickles b'invalid order id: order id <built-in function id> not exists'
+Client: b'no empty space for order Fresh Bread'
+Carne Asada value is about to update to 0.30675676
+Cookie Dough value is about to update to 0.7125
+Orange Sorbet value is about to update to 0.16363636
+Client: b'no empty space for order Burrito'
+ShelfManager: Cookie Dough has is about to be removed from shelf
+FROZEN Shelf: Cookie Dough is removed
+Courior: successfully pickedup Cookie Dough after 5 seconds
+Courior: French Fries b'invalid order id: order id <built-in function id> not exists'
+ShelfManager: Carne Asada has is about to be removed from shelf
+HOT Shelf: Carne Asada is removed
+Courior: successfully pickedup Carne Asada after 3 seconds
+ShelfManager: Orange Sorbet has is about to be removed from shelf
+None Shelf: Orange Sorbet is removed
+Courior: successfully pickedup Orange Sorbet after 2 seconds
+Shelf: Icy has successfully placed in FROZEN shelf
+Courior: Icy order received for delivery
+Icy value is about to update to 0.79130435
+Shelf: Push Pop has successfully placed in overflow shelf
+Courior: Push Pop order received for delivery
+Shelf: Pasta has successfully placed in HOT shelf
+Courior: Pasta order received for delivery
+Pasta value is about to update to 0.745
+Icy value is about to update to 0.5826087
+Push Pop value is about to update to 0.72727273
+Client: b'no empty space for order Chicken Nuggets'
+Client: b'no empty space for order Ice Cream Sandwich'
+Pasta value is about to update to 0.49
+Icy value is about to update to 0.37391304
+Push Pop value is about to update to 0.45454545
+Client: b'no empty space for order Taco'
+Client: b'no empty space for order Tomato Soup'
+Pasta value is about to update to 0.235
+Icy value is about to update to 0.16521739
+Push Pop value is about to update to 0.18181818
+ShelfManager: Push Pop has is about to be removed from shelf
+None Shelf: Push Pop is removed
+Courior: successfully pickedup Push Pop after 3 seconds
+Shelf: Vanilla Ice Cream has successfully placed in overflow shelf
+Courior: Vanilla Ice Cream order received for delivery
+ShelfManager: Icy has is about to be removed from shelf
+FROZEN Shelf: Icy is removed
+Courior: successfully pickedup Icy after 4 seconds
+Client: b'no empty space for order Poppers'
+Pasta value is about to update to -0.02
+Vanilla Ice Cream value is about to update to 0.83548387
+ShelfManager: Pasta has spoiled and about to be removed from shelf
+HOT Shelf: Pasta is removed
+ShelfManager: Vanilla Ice Cream with FROZEN has moved to allowable shelf
+None Shelf: Vanilla Ice Cream is removed
+Shelf: Vanilla Ice Cream has successfully placed in FROZEN shelf
+Shelf: Popsicle has successfully placed in overflow shelf
+Courior: Popsicle order received for delivery
+Courior: Pasta b'invalid order status: can not change order to DELIVERED which is already FAILED'
+Client: b'no empty space for order Strawberries'
+Vanilla Ice Cream value is about to update to 0.73870968
+Popsicle value is about to update to 0.7826087
+ShelfManager: Vanilla Ice Cream has is about to be removed from shelf
+FROZEN Shelf: Vanilla Ice Cream is removed
+Courior: successfully pickedup Vanilla Ice Cream after 2 seconds
+Shelf: Brown Rice has successfully placed in HOT shelf
+Courior: Brown Rice order received for delivery
+Client: b'no empty space for order Cheese Pizza'
+Brown Rice value is about to update to 0.78035714
+Popsicle value is about to update to 0.56521739
+ShelfManager: Popsicle with FROZEN has moved to allowable shelf
+None Shelf: Popsicle is removed
+Shelf: Popsicle has successfully placed in FROZEN shelf
+Shelf: Pressed Juice has successfully placed in COLD shelf
+Courior: Pressed Juice order received for delivery
+Shelf: Coconut has successfully placed in overflow shelf
+Courior: Coconut order received for delivery
+Brown Rice value is about to update to 0.56071429
+Pressed Juice value is about to update to 0.856
+Popsicle value is about to update to 0.54347826
+Coconut value is about to update to 0.82992126
+None Shelf: Coconut is removed
+ShelfManager: Popsicle has is about to be removed from shelf
+FROZEN Shelf: Popsicle is removed
+Courior: successfully pickedup Popsicle after 3 seconds
+Shelf: Onion Rings has successfully placed in overflow shelf
+Courior: Onion Rings order received for delivery
+Client: b'no empty space for order Fish Tacos'
+Brown Rice value is about to update to 0.34107143
+Pressed Juice value is about to update to 0.712
+Onion Rings value is about to update to 0.64179104
+Client: b'no empty space for order Pot Stickers'
+Client: b'no empty space for order Kombucha'
+Brown Rice value is about to update to 0.12142857
+Pressed Juice value is about to update to 0.568
+Onion Rings value is about to update to 0.28358209
+ShelfManager: Onion Rings has is about to be removed from shelf
+None Shelf: Onion Rings is removed
+Courior: successfully pickedup Onion Rings after 2 seconds
+Shelf: Mixed Greens has successfully placed in overflow shelf
+Courior: Mixed Greens order received for delivery
+Client: b'no empty space for order Sushi'
+Brown Rice value is about to update to -0.09821429
+Pressed Juice value is about to update to 0.424
+Mixed Greens value is about to update to 0.81904762
+ShelfManager: Brown Rice has spoiled and about to be removed from shelf
+HOT Shelf: Brown Rice is removed
+Courior: Brown Rice b'invalid order status: can not change order to DELIVERED which is already FAILED'
+Client: b'no empty space for order Apples'
+Courior: Coconut b'invalid order id: order id <built-in function id> not exists'
+Shelf: Kebab has successfully placed in HOT shelf
+Courior: Kebab order received for delivery
+Kebab value is about to update to 0.769
+Pressed Juice value is about to update to 0.28
+Mixed Greens value is about to update to 0.63809524
+ShelfManager: Pressed Juice has is about to be removed from shelf
+COLD Shelf: Pressed Juice is removed
+Courior: successfully pickedup Pressed Juice after 5 seconds
+ShelfManager: Mixed Greens has is about to be removed from shelf
+None Shelf: Mixed Greens is removed
+Courior: successfully pickedup Mixed Greens after 2 seconds
+Shelf: Mac & Cheese has successfully placed in overflow shelf
+Courior: Mac & Cheese order received for delivery
+Client: b'no empty space for order Corn Dog'
+Kebab value is about to update to 0.538
+Mac & Cheese value is about to update to 0.70439024
+Shelf: Grilled Corn Salad has successfully placed in COLD shelf
+Courior: Grilled Corn Salad order received for delivery
+Shelf: Pistachio Ice Cream has successfully placed in FROZEN shelf
+Courior: Pistachio Ice Cream order received for delivery
+Kebab value is about to update to 0.307
+Grilled Corn Salad value is about to update to 0.89180328
+Pistachio Ice Cream value is about to update to 0.76
+Mac & Cheese value is about to update to 0.40878049
+None Shelf: Mac & Cheese is removed
+Shelf: Strawberyy Banana Split has successfully placed in overflow shelf
+Courior: Strawberyy Banana Split order received for delivery
+ShelfManager: Kebab has is about to be removed from shelf
+HOT Shelf: Kebab is removed
+Courior: successfully pickedup Kebab after 3 seconds
+Client: b'no empty space for order McFlury'
+Grilled Corn Salad value is about to update to 0.78360656
+Pistachio Ice Cream value is about to update to 0.52
+Strawberyy Banana Split value is about to update to -1.75
+ShelfManager: Strawberyy Banana Split has spoiled and about to be removed from shelf
+None Shelf: Strawberyy Banana Split is removed
+Shelf: Acai Bowl has successfully placed in overflow shelf
+Courior: Acai Bowl order received for delivery
+Client: b'no empty space for order Yogurt'
+Grilled Corn Salad value is about to update to 0.67540984
+Pistachio Ice Cream value is about to update to 0.28
+Acai Bowl value is about to update to 0.65
+Courior: Mac & Cheese b'invalid order id: order id <built-in function id> not exists'
+ShelfManager: Grilled Corn Salad has is about to be removed from shelf
+COLD Shelf: Grilled Corn Salad is removed
+Courior: successfully pickedup Grilled Corn Salad after 3 seconds

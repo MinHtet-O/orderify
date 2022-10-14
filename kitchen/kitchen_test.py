@@ -1,18 +1,23 @@
 import unittest
 from kitchen import *
 
-class ShelfTest(unittest.TestCase):
+# TODO: define method to prepare test data
+from order.order_status import OrderStatus
+from order.temp import Temp
+
+
+class KitchenTest(unittest.TestCase):
     def setUp(self):
         delivery_queue = queue.Queue()
         shelf_manager = ShelfManager()
-        shelf_manager.add_allowable_shelf(2, ShelfTemp.HOT)
-        shelf_manager.add_allowable_shelf(2, ShelfTemp.COLD)
+        shelf_manager.add_allowable_shelf(2, Temp.HOT)
+        shelf_manager.add_allowable_shelf(2, Temp.COLD)
         shelf_manager.add_overflow_shelf(2)
         self.kitchen = Kitchen(delivery_queue, shelf_manager)
 
     def test_placement(self):
-        hot_order = Order("1","Hot Dog", ShelfTemp.HOT, 1, 1)
-        cold_order = Order("2", "Ice Cream", ShelfTemp.COLD, 1, 1)
+        hot_order = Order("1","Hot Dog", Temp.HOT, 1, 1)
+        cold_order = Order("2", "Ice Cream", Temp.COLD, 1, 1)
         self.kitchen.put_order(hot_order)
         self.kitchen.put_order(cold_order)
 
@@ -21,7 +26,7 @@ class ShelfTest(unittest.TestCase):
         self.assertEqual(self.kitchen.get_order(id = "2"), cold_order)
 
         # put another order with duplicate order id
-        hot_order_duplicate = Order("1","Burger", ShelfTemp.HOT, 1, 1)
+        hot_order_duplicate = Order("1","Burger", Temp.HOT, 1, 1)
         # Expect: can not receive order with duplicate order id
         with self.assertRaises(InvalidOrderError):
             self.kitchen.put_order(hot_order_duplicate)
@@ -33,7 +38,7 @@ class ShelfTest(unittest.TestCase):
             self.kitchen.get_order("-1")
 
     def test_update_order_status(self):
-        hot_order = Order("1","Hot Dog", ShelfTemp.HOT, 1, 1)
+        hot_order = Order("1","Hot Dog", Temp.HOT, 1, 1)
         self.kitchen.put_order(hot_order)
 
         # Expect: the order status is waiting to deliver

@@ -1,33 +1,37 @@
-from courior import *
-from kitchen import *
+from courior.courior import *
+from config import *
+from kitchen.kitchen import *
 from flask import Flask, jsonify, request
 from client.generate_orders import *
-
+from consts import *
+from shelf_manager.shelf_manager import *
 # consts
-CLOCK_INTERVAL = 1
 
 # init events
 shef_managment_event = threading.Event()
 
-# tick events every clock_interval
 def tick_events():
     while True:
         time.sleep(CLOCK_INTERVAL)
         shef_managment_event.set()
 
+
 # init shelf manager
 shelf_manager = ShelfManager()
-shelf_manager.add_allowable_shelf(1, ShelfTemp.HOT)
-shelf_manager.add_allowable_shelf(1, ShelfTemp.COLD)
-shelf_manager.add_allowable_shelf(1, ShelfTemp.FROZEN)
-shelf_manager.add_overflow_shelf(1)
+shelf_manager.add_allowable_shelf(allowable_shelf_size, Temp.HOT)
+shelf_manager.add_allowable_shelf(allowable_shelf_size, Temp.COLD)
+shelf_manager.add_allowable_shelf(allowable_shelf_size, Temp.FROZEN)
+shelf_manager.add_overflow_shelf(allowable_shelf_size)
 
 # init kitchen
 delivery_queue = queue.Queue()
 kitchen = Kitchen(delivery_queue, shelf_manager)
 
 # init courior manager
-courior_manager = CourierManager(delivery_queue,15,20)
+courior_manager = CourierManager(
+    delivery_queue,
+    min_deliver_duration=MIN_DELIVER_DURATION,
+    max_deliver_duration=MAX_DELIVER_DURATION)
 
 # init threads
 threading.Thread(target=courior_manager.init_manager_thread).start()
@@ -43,12 +47,12 @@ def post_order():
         order = Order.decode_json(json)
         kitchen.put_order(order)
     except InvalidOrderError as e:
-        return "Invalid order: {msg}".format(msg = e), 500
+        return "Invalid order: {msg}".format(msg = e), HTTP_STATUS_INTERNAL_ERROR
     except NoEmptySpaceErr as e:
-        return '{}'.format(e), 500
-    # except:
-    #     return 'unknown error', 500
-    return order.id, 200
+        return '{}'.format(e), HTTP_STATUS_INTERNAL_ERROR
+    except Exception as e:
+        return 'unknown error', HTTP_STATUS_INTERNAL_ERROR
+    return order.id, HTTP_STATUS_OK
 
 @app.route('/order/<string:id>/status',methods = ['PUT'])
 def update_order_status(id):
@@ -57,33 +61,36 @@ def update_order_status(id):
         status = OrderStatus.decode_json(json)
         kitchen.update_order_status(id, status)
     except InvalidOrderID as e:
-        return "invalid order id: {}".format(e), 500
+        return "invalid order id: {}".format(e), HTTP_STATUS_INTERNAL_ERROR
     except InvalidOrderStatus as e:
-        return "invalid order status: {}".format(e), 500
-    except:
-        return "unknown error", 500
-    return '',200
+        return "invalid order status: {}".format(e), HTTP_STATUS_INTERNAL_ERROR
+    except Exception as e:
+        return "unknown error", HTTP_STATUS_INTERNAL_ERROR
+    return '',HTTP_STATUS_OK
 
 @app.route('/order/<string:id>/',methods = ['GET'])
 def get_order(id):
     try:
         order = kitchen.get_order(id)
     except InvalidOrderID as e:
-        return "invalid order id: {}".format(e), 500
-    return json.dumps(order, indent=4, cls=OrderEncoder), 200
+        return "invalid order id: {}".format(e), HTTP_STATUS_INTERNAL_ERROR
+    except Exception as e:
+        return "unknown error", HTTP_STATUS_INTERNAL_ERROR
+    return json.dumps(order, indent=4, cls=OrderEncoder), HTTP_STATUS_OK
 
 @app.route('/order',methods = ['GET'])
 def get_orders():
-    orders = kitchen.get_orders()
+    try:
+        orders = kitchen.get_orders()
+    except Exception as e:
+        return "unknown error", HTTP_STATUS_INTERNAL_ERROR
     return jsonify(
                     data=json.dumps(orders, indent=4),
-                    status=200
+                    status=HTTP_STATUS_OK
                 )
 
 if __name__ == "__main__":
     app.run(debug=False)
 
 # TODO: add logger for both debug and info
-# TODO: response proper error json response
-# TODO: in handlers, add exception for all handlers
-# TODO: define consts for HTTP status codes
+# TODO: response error json response for end points

@@ -1,6 +1,5 @@
-from shelf_manager import *
+from shelf_manager.shelf_manager import *
 import queue
-
 
 class Kitchen:
     def __init__(self, delivery_queue: queue.Queue, shelf_manager: ShelfManager):
@@ -18,11 +17,16 @@ class Kitchen:
         return
 
     def put_order(self, order: Order):
+
         if order.id in self.__orders:
             raise InvalidOrderError("Order id of {} already exits".format(order.id))
         self.__orders[order.id] = order
+
+        exception = self.__shelf_manager.put_order(order)
+        if exception is not None:
+            order.status = OrderStatus.FAILED
+            raise exception
         self.__delivery_queue.put(order)
-        self.__shelf_manager.put_order(order)
         order.status = OrderStatus.WAITING
 
     def get_order(self, id):

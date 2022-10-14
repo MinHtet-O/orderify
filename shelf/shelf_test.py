@@ -1,15 +1,16 @@
 import unittest
 from shelf import *
+from shelf.calc_inherent import *
 
 class ShelfTest(unittest.TestCase):
     def setUp(self):
-        self.shelf: Shelf = Shelf(capacity= 2, temp=ShelfTemp.HOT)
+        self.shelf: Shelf = Shelf(capacity= 2, temp=Temp.HOT)
 
     def prepare_orders(self):
         # define external helper method to generate test dta
-        order1 = Order(id="1", name="Pizza", temp=ShelfTemp.HOT, shelfLife=1, decayRate=1)
-        order2 = Order(id="2", name="Hot Dog", temp=ShelfTemp.HOT, shelfLife=1, decayRate=1)
-        order3 = Order(id="3", name="Burger", temp=ShelfTemp.HOT, shelfLife=1, decayRate=1)
+        order1 = Order(id="1", name="Pizza", temp=Temp.HOT, shelfLife=1, decayRate=1)
+        order2 = Order(id="2", name="Hot Dog", temp=Temp.HOT, shelfLife=1, decayRate=1)
+        order3 = Order(id="3", name="Burger", temp=Temp.HOT, shelfLife=1, decayRate=1)
         return (order1,order2,order3)
 
     def test_get_orders(self):
@@ -21,7 +22,7 @@ class ShelfTest(unittest.TestCase):
         self.assertEqual(self.shelf.get_orders(), [order1,order2])
 
     def test_temp_not_match(self):
-        invalid_order = Order(id="1", name="Ice Cream", temp=ShelfTemp.FROZEN, shelfLife=1, decayRate=1)
+        invalid_order = Order(id="1", name="Ice Cream", temp=Temp.FROZEN, shelfLife=1, decayRate=1)
         # Expect: unable to accept order of different temp
         with self.assertRaises(TempNotMatchErr):
             self.shelf.put_order(invalid_order)
