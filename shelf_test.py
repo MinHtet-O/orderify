@@ -12,6 +12,14 @@ class ShelfTest(unittest.TestCase):
         order3 = Order(id="3", name="Burger", temp=ShelfTemp.HOT, shelfLife=1, decayRate=1)
         return (order1,order2,order3)
 
+    def test_get_orders(self):
+        order1, order2, _ = self.prepare_orders()
+        self.shelf.put_order(order1)
+        self.shelf.put_order(order2)
+
+        # Expect: the two orders are in the list
+        self.assertEqual(self.shelf.get_orders(), [order1,order2])
+
     def test_temp_not_match(self):
         invalid_order = Order(id="1", name="Ice Cream", temp=ShelfTemp.FROZEN, shelfLife=1, decayRate=1)
         # Expect: unable to accept order of different temp

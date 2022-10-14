@@ -19,7 +19,7 @@ def tick_events():
         shef_managment_event.set()
 
 # init shelf manager
-shelf_manager = ShelfManager(shef_managment_event)
+shelf_manager = ShelfManager()
 shelf_manager.add_allowable_shelf(1, ShelfTemp.HOT)
 shelf_manager.add_allowable_shelf(1, ShelfTemp.COLD)
 shelf_manager.add_allowable_shelf(1, ShelfTemp.FROZEN)

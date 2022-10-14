@@ -59,4 +59,5 @@ class ShelfTest(unittest.TestCase):
 
 unittest.main()
 
+# test: update order status to delivered, the order should be remove be removed
 

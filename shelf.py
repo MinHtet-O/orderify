@@ -49,7 +49,7 @@ class Shelf:
                 decay_rate= order.decay_rate,
                 decay_mod=self.decay_mod
             )
-            order.update_inherent_value(value)
+            order.inherent_value = value
 
     def remove_order(self, index: int)->Order:
         print("{} Shelf: {} is removed".format(self.temp, self.store[index].name))
@@ -73,4 +73,4 @@ class TempNotMatchErr(Exception):
 
 # TODO: factory method for shelf
 
-# Test: get orders
+

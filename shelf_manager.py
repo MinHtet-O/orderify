@@ -4,13 +4,12 @@ from errors import *
 SHELF_MANAGEMENT_TICK = 1
 
 class ShelfManager:
-    def __init__(self, event: threading.Event):
-        self.event = event
+    def __init__(self):
         self.__allowable_shelves:dict[ShelfTemp, Shelf] = {}
         self.__overflow_shelf: Shelf = None
 
     def add_allowable_shelf(self, cap: int, temp: ShelfTemp):
-        if self.__temp_shelf_exit(temp):
+        if self.__shelf_exit(temp):
             raise ShelfAlreadyExits("{} shelf already exits".format(temp))
         self.__allowable_shelves[temp] = Shelf(cap, temp)
 
@@ -31,22 +30,27 @@ class ShelfManager:
     def __overflow_shelf_full(self) -> Boolean:
         return self.__overflow_shelf.check_full()
 
-    def peek_orders(self, temp: ShelfTemp) -> List[Order]:
+    def peek_allowable_shelf(self, temp: ShelfTemp) -> List[Order]:
         if temp == None:
-            return self.__overflow_shelf.get_orders()
-        if not self.__temp_shelf_exit(temp):
+            return TempNotMatchErr("{} is not valid temperature").__format__(temp)
+        if not self.__shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for temp {}".format(temp))
         return self.__allowable_shelves[temp].get_orders()
 
+    def peek_overflow_shelf(self) -> List[Order]:
+        return self.__overflow_shelf.get_orders()
+
+
     # TODO: change method name
-    def __temp_shelf_exit(self, temp) -> Boolean:
+    def __shelf_exit(self, temp) -> Boolean:
         if temp in self.__allowable_shelves:
             return True
         return False
 
     def put_order(self, order: Order):
         temp = order.temp
-        if not self.__temp_shelf_exit(temp):
+
+        if not self.__shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for this order temp {}".format(temp))
 
         if not self.__allowable_shelves[temp].check_full():
@@ -70,13 +74,13 @@ class ShelfManager:
         self.__discard_spoiled_orders()
         self.__order_replacement()
 
-    def remove_order(self, order_id):
+    def remove_order(self, order_id: string):
         orders = self.__order_iterator()
         for (index, order, shelf ) in orders:
             if order.id == order_id:
                 print("ShelfManager: {} has is about to be removed from shelf".format(order.name))
                 shelf.remove_order(index)
-                break
+                return
         raise InvalidOrderID("order id {} not exists".format(id))
 
 
@@ -84,9 +88,9 @@ class ShelfManager:
     def __discard_spoiled_orders(self):
         orders = self.__order_iterator()
         for (index, order, shelf ) in orders:
-            if order.check_spoiled():
+            if order.spoiled():
                 print("ShelfManager: {} has spoiled and about to be removed from shelf".format(order.name))
-                order.update_status(OrderStatus.FAILED)
+                order.status = OrderStatus.FAILED
                 shelf.remove_order(index)
                 continue
 

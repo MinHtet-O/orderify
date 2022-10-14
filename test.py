@@ -1,35 +1,20 @@
-import threading
-import time
+def decor1(func):
+    def inner():
+        print("inside decor1")
+        x = func()
+        return x * x
+    return inner
 
-event1 = threading.Event()
-event2 = threading.Event()
-events = [event1,event2]
+def decor(func):
+    def inner():
+        print("inside decor")
+        x = func()
+        return 2 * x
+    return inner
 
-def myfunction1(event):
-    while True:
-        event.wait()
-        # do stuff
-        print("do stuff 1")
-        event.clear()
+@decor1
+@decor
+def num():
+    return 10
 
-def myfunction2(event):
-    while True:
-        event.wait()
-        # do stuff
-        print("do stuff 2")
-        event.clear()
-
-def tick_events(events):
-    while True:
-        time.sleep(1)
-        for event in events:
-            event.set()
-        print("all thread sets")
-
-t1 = threading.Thread(target=myfunction1, args=(event1,)).start()
-t2 = threading.Thread(target=myfunction2, args=(event2,)).start()
-t3 = threading.Thread(target=tick_events, args=(events,)).start()
-
-
-
-
+print(num())

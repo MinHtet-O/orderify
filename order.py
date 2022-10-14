@@ -6,6 +6,12 @@ from enum import Enum
 import json
 from xmlrpc.client import Boolean
 
+def lock_attr(func):
+    def wrapper(*args, **kwargs):
+        with args[0].lock:
+            return func(*args, **kwargs)
+    return wrapper
+
 class ShelfTemp(str, Enum):
     HOT = "HOT"
     COLD = "COLD"
@@ -48,66 +54,50 @@ class OrderStatus(str, Enum):
 
 class Order:
     def __init__(self,id: string, name: string, temp: ShelfTemp, shelfLife: int, decayRate: float):
-        self.id = id
-        self.name = name
-        self.temp = temp
-        self.shelf_life = shelfLife
-        self.decay_rate = decayRate
-        self.lock = threading.Lock()
-        self.status = OrderStatus.PENDING
-        self.order_age = 1
-        self.inherent_value = 0
-        self.valid_status_trans = {
-            OrderStatus.PENDING: [OrderStatus.WAITING],
+        self.__id = id
+        self.__name = name
+        self.__temp = temp
+        self.__shelf_life = shelfLife
+        self.__decay_rate = decayRate
+        self.__status = OrderStatus.PENDING
+        self.__order_age = 0
+        self.__inherent_value = 1
+        self.__status_trans = {
+            OrderStatus.PENDING: [OrderStatus.WAITING, OrderStatus.FAILED],
             OrderStatus.WAITING: [OrderStatus.DELIVERED, OrderStatus.FAILED]
         }
+        self.lock = threading.Lock()
 
     # TODO: refactor to spoiled and delivered
-    def check_spoiled(self) -> Boolean:
+    def spoiled(self) -> Boolean:
         return self.inherent_value < 0
 
-    def check_delivered(self) -> Boolean:
+    def delivered(self) -> Boolean:
         return self.status == OrderStatus.DELIVERED
 
     def __verify_status_trans(self, current: OrderStatus, next: OrderStatus) -> Boolean:
-        valid_states = self.valid_status_trans[current]
+        valid_states = self.__status_trans[current]
         return next in valid_states
 
     def __verify_age_trans(self, current: int, new: int) -> Boolean:
         return new > current
 
-    def update_status(self, new_status: OrderStatus):
-        if not self.__verify_status_trans(self.status, new_status):
-            raise InvalidOrderStatus("can not change order to {} which is already {}".format(new_status, self.status))
-        self.lock.acquire()
-        self.status = new_status
-        self.lock.release()
-
-    def update_age(self, new_order_age: int):
-        if not self.__verify_age_trans(self.order_age, new_order_age):
-            raise Exception("can not set order age smaller than current")
-        self.lock.acquire()
-        self.order_age = new_order_age
-        self.lock.release()
-
-    def update_inherent_value(self, inherent_value: float):
-        self.lock.acquire()
-        print("{} value is about to update to {}".format(self.name, inherent_value))
-        self.inherent_value:float = inherent_value
-        self.lock.release()
+    def __verify_inherent_value_trans(self, current: int, new: int) -> Boolean:
+        return new < current
 
     def __repr__(self):
-        str = "ID: {}, name: {}, temp: {}, value: {}".format(
-            self.id,
-            self.name,
-            self.temp,
-            self.inherent_value,
+        str = "ID: {}, name: {}, temp: {}, value: {}, order_age {}".format(
+            self.__id,
+            self.__name,
+            self.__temp,
+            self.__inherent_value,
+            self.__order_age
             )
         return str
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
-            sort_keys=True, indent=4)
+                          sort_keys=True, indent=4)
 
     @staticmethod
     def decode_json(json):
@@ -128,6 +118,96 @@ class Order:
         order = Order(id,name, temp, shelf_life, decay_rate)
         return order
 
+    @property
+    @lock_attr
+    def id(self):
+        return self.__id
+
+    @id.setter
+    @lock_attr
+    def id(self, id):
+        self.__id = id
+
+    @property
+    @lock_attr
+    def name(self):
+        return self.__name
+
+    @name.setter
+    @lock_attr
+    def name(self, name):
+        self.__name = name
+
+    @property
+    @lock_attr
+    def temp(self):
+        print("inside temp getter")
+        print(self.__temp)
+        return self.__temp
+
+    @temp.setter
+    @lock_attr
+    def temp(self, temp):
+        self.__temp = temp
+
+    @property
+    @lock_attr
+    def shelf_life(self):
+        return self.__shelf_life
+
+    @shelf_life.setter
+    @lock_attr
+    def shelf_life(self, shelf_life):
+        self.__shelf_life = shelf_life
+
+    @property
+    @lock_attr
+    def decay_rate(self):
+        return self.__decay_rate
+
+    @decay_rate.setter
+    @lock_attr
+    def decay_rate(self, decay_rate):
+        self.__decay_rate = decay_rate
+
+    @property
+    @lock_attr
+    def status(self):
+        return self.__status
+
+    @status.setter
+    @lock_attr
+    def status(self, status):
+        print("inside status setter")
+        if not self.__verify_status_trans(current= self.__status,next= status):
+            raise InvalidOrderStatus("can not change order to {} which is already {}".format(status, self.__status))
+        self.__status = status
+
+    @property
+    @lock_attr
+    def order_age(self):
+        return self.__order_age
+
+    @order_age.setter
+    @lock_attr
+    def order_age(self, order_age):
+        if not self.__verify_age_trans(current= self.__order_age, new = order_age):
+            raise Exception("can not set order age smaller than current")
+        self.__order_age = order_age
+
+    @property
+    @lock_attr
+    def inherent_value(self):
+        return self.__inherent_value
+
+    @inherent_value.setter
+    @lock_attr
+    def inherent_value(self, inherent_value):
+        if not self.__verify_inherent_value_trans(current= self.__inherent_value, new = inherent_value):
+            raise Exception("can not set inherent bigger than current")
+        print("{} value is about to update to {}".format(self.__name, inherent_value))
+        self.__inherent_value = inherent_value
+
 class InvalidOrderError(Exception):
     pass
 class InvalidOrderStatus(Exception):
@@ -135,8 +215,8 @@ class InvalidOrderStatus(Exception):
 
 class OrderEncoder(json.JSONEncoder):
     def default(self, obj):
-            data = dict()
-            data['id'] = obj.id
-            data['name'] = obj.name
-            data['status'] = obj.status
-            return data
+        data = dict()
+        data['id'] = obj.id
+        data['name'] = obj.name
+        data['status'] = obj.status
+        return data
