@@ -19,7 +19,13 @@ class OrderTest(unittest.TestCase):
         self.order.status = OrderStatus.WAITING
         # Expect: order status has changed to WAITING
         self.assertEqual(self.order.status, OrderStatus.WAITING)
+
+        # Expect: unable to change state from WAITING back to pending
+        with self.assertRaises(InvalidOrderStatus):
+            self.order.status = OrderStatus.PENDING
+
         self.order.status = OrderStatus.DELIVERED
+        #Expect: order is delivered
         self.assertTrue(self.order.delivered())
 
         with self.assertRaises(InvalidOrderStatus):

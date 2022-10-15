@@ -15,16 +15,8 @@ from order.order import OrderStatus, OrderEncoder
 from pickup_area.pickup_area import *
 from shelf_manager.shelf_manager import ShelfManager
 
-# TODO: add type annotation in all methods
 # init events
 manage_shelf_event = threading.Event()
-
-
-def tick_events():
-    while True:
-        sleep(CLOCK_INTERVAL)
-        manage_shelf_event.set()
-
 
 # init pickup area
 pickup_area = PickupArea()
@@ -49,6 +41,13 @@ courior_manager = CourierManager(
     min_deliver_duration=MIN_DELIVER_DURATION,
     max_deliver_duration=MAX_DELIVER_DURATION
 )
+
+
+
+def tick_events():
+    while True:
+        sleep(CLOCK_INTERVAL)
+        manage_shelf_event.set()
 
 # init threads
 threading.Thread(target=courior_manager.init_manager_thread).start()
