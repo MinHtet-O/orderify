@@ -1,63 +1,47 @@
-from typing import List
-
-from config import ALLOWABLE_DECAY_MODS, OVERFLOW_DECAY_MODS, ORDER_AGE_INC
-from errors import NoEmptySpaceErr, TempNotMatchErr
+from errors import NoEmptySpaceErr
 from order.order import *
-import random
+from config import *
 from shelf.calc_inherent import *
-from order.temp import Temp
 
 class Shelf:
-    def __init__(self, capacity: int, temp: Temp):
-        self.store: list[Order] = []
-        self.capacity = capacity
-        self.temp = temp
-        if temp == None:
-            self.decay_mod: int = OVERFLOW_DECAY_MODS
-        else:
-            self.decay_mod:int = ALLOWABLE_DECAY_MODS[temp]
+    def __init__(self, capacity: int, decay_mod: int = OVERFLOW_DECAY_MODS):
+        self.__store: list[Order] = []
+        self.__capacity = capacity
+        self.__decay_mod = decay_mod
+
     @property
     def name(self):
-        if self.temp == None:
-            return "overflow shelf"
-        return "{} shelf".format(self.temp)
+        return "shelf"
+    @property
+    def orders(self):
+        return self.__store
+    @property
+    def size(self):
+        return len(self.__store)
+    @property
+    def temp(self):
+        return self.__temp
 
-    def get_orders(self) -> List[Order]:
-        return self.store
-
-    def check_full(self):
-        if len(self.store) >= self.capacity:
-            return True
-        return False
+    def full(self) -> bool:
+        return len(self.__store) >= self.__capacity
 
     def put_order(self, order: Order):
-        if self.temp != None:
-            if self.temp != order.temp:
-                raise TempNotMatchErr("order temp {} can not put in shelf with temp {}".format(order.temp, self.temp))
-        if self.check_full():
-            raise NoEmptySpaceErr("shelf has reached to it's max storage of {}".format(self.capacity))
+        if self.full():
+            raise NoEmptySpaceErr("shelf has reached to it's max storage of {}".format(self.__capacity))
         print("Shelf: {} has successfully placed in {}".format(order.name, self.name))
-        self.store.append(order)
+        self.__store.append(order)
 
     def update_deterioration(self):
-        for order in self.store:
+        for order in self.__store:
             order.order_age = order.order_age + ORDER_AGE_INC
             value = calc_inherent_value(
                 shelf_life=order.shelf_life,
                 order_age= order.order_age,
                 decay_rate= order.decay_rate,
-                decay_mod=self.decay_mod
+                decay_mod=self.__decay_mod
             )
             order.inherent_value = value
 
     def remove_order(self, index: int)->Order:
-        print("{} Shelf: {} is removed".format(self.temp, self.store[index].name))
-        return self.store.pop(index)
-
-    def remove_random_order(self) -> Order:
-        order_index = random.randint(0, len(self.store)-1)
-
-        return self.remove_order(order_index)
-
-
-
+        print("{} Shelf: {} is removed".format(self.name, self.__store[index].name))
+        return self.__store.pop(index)

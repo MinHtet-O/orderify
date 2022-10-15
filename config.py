@@ -8,7 +8,7 @@ MIN_DELIVER_DURATION=2
 MAX_DELIVER_DURATION=6
 
 # order
-ORDER_INTERVAL = 0.5
+ORDER_INTERVAL = 2
 
 # shelf
 allowable_shelf_size = 1

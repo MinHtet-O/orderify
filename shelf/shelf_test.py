@@ -1,6 +1,6 @@
 import unittest
-from shelf import *
 from shelf.calc_inherent import *
+
 
 class ShelfTest(unittest.TestCase):
     def setUp(self):
@@ -35,7 +35,7 @@ class ShelfTest(unittest.TestCase):
         self.shelf.put_order(order2)
 
         # Expect: shelf is full
-        self.assertEqual(self.shelf.check_full(), True)
+        self.assertEqual(self.shelf.full(), True)
 
         # Expect: unable to accept order anymore
         with self.assertRaises(NoEmptySpaceErr):
@@ -45,7 +45,7 @@ class ShelfTest(unittest.TestCase):
         self.shelf.remove_order(1)
 
         # Expect: shelf is no longer full
-        self.assertEqual(self.shelf.check_full(), False)
+        self.assertEqual(self.shelf.full(), False)
 
         # Expect: only order 1 exits in the shelf at the end
         self.assertEqual(self.shelf.get_orders(), [order1])

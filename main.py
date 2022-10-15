@@ -1,11 +1,12 @@
-from courior.courior import *
-from config import *
-from kitchen.kitchen import *
 from flask import Flask, jsonify, request
+
+from courior.courior import *
+from kitchen.kitchen import *
+from shelf_manager.shelf_manager import *
 from client.generate_orders import *
 from consts import *
-from shelf_manager.shelf_manager import *
-# consts
+from pickup_area.pickup_area import *
+# TODO: order imports system , 3rd party libss ,user modules
 
 # init events
 shef_managment_event = threading.Event()
@@ -15,17 +16,17 @@ def tick_events():
         time.sleep(CLOCK_INTERVAL)
         shef_managment_event.set()
 
-
-# init shelf manager
-shelf_manager = ShelfManager()
-shelf_manager.add_allowable_shelf(allowable_shelf_size, Temp.HOT)
-shelf_manager.add_allowable_shelf(allowable_shelf_size, Temp.COLD)
-shelf_manager.add_allowable_shelf(allowable_shelf_size, Temp.FROZEN)
-shelf_manager.add_overflow_shelf(allowable_shelf_size)
+# init pickup area
+pickup_area = PickupArea()
+pickup_area.add_allowable_shelf(allowable_shelf_size, Temp.HOT)
+pickup_area.add_allowable_shelf(allowable_shelf_size, Temp.COLD)
+pickup_area.add_allowable_shelf(allowable_shelf_size, Temp.FROZEN)
+pickup_area.add_overflow_shelf(allowable_shelf_size)
+shelf_manager = ShelfManager(pickup_area)
 
 # init kitchen
 delivery_queue = queue.Queue()
-kitchen = Kitchen(delivery_queue, shelf_manager)
+kitchen = Kitchen(delivery_queue, pickup_area)
 
 # init courior manager
 courior_manager = CourierManager(
@@ -35,7 +36,7 @@ courior_manager = CourierManager(
 
 # init threads
 threading.Thread(target=courior_manager.init_manager_thread).start()
-threading.Thread(target=shelf_manager.init_manager_thread, args=(shef_managment_event,)).start()
+threading.Thread(target=shelf_manager.manage_shelves, args=(shef_managment_event,)).start()
 threading.Thread(target=init_order_client).start()
 threading.Thread(target=tick_events).start()
 
@@ -51,7 +52,7 @@ def post_order():
     except NoEmptySpaceErr as e:
         return '{}'.format(e), HTTP_STATUS_INTERNAL_ERROR
     except Exception as e:
-        return 'unknown error', HTTP_STATUS_INTERNAL_ERROR
+        return 'unknown error {}', HTTP_STATUS_INTERNAL_ERROR
     return order.id, HTTP_STATUS_OK
 
 @app.route('/order/<string:id>/status',methods = ['PUT'])
@@ -64,8 +65,8 @@ def update_order_status(id):
         return "invalid order id: {}".format(e), HTTP_STATUS_INTERNAL_ERROR
     except InvalidOrderStatus as e:
         return "invalid order status: {}".format(e), HTTP_STATUS_INTERNAL_ERROR
-    except Exception as e:
-        return "unknown error", HTTP_STATUS_INTERNAL_ERROR
+    # except Exception as e:
+    #     return "unknown error", HTTP_STATUS_INTERNAL_ERROR
     return '',HTTP_STATUS_OK
 
 @app.route('/order/<string:id>/',methods = ['GET'])

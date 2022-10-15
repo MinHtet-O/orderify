@@ -3,7 +3,7 @@ import threading
 
 import json
 from errors import InvalidOrderStatus, InvalidOrderAge, InvalidOrderInherentValue, InvalidOrderError
-from order.order_status import OrderStatus
+from order.order_status import OrderStatus, StatusTrans
 from order.temp import Temp
 
 
@@ -23,10 +23,6 @@ class Order:
         self.__status = OrderStatus.PENDING
         self.__order_age = 0
         self.__inherent_value = 1
-        self.__status_trans = {
-            OrderStatus.PENDING: [OrderStatus.WAITING, OrderStatus.FAILED, OrderStatus.REJECTED],
-            OrderStatus.WAITING: [OrderStatus.DELIVERED, OrderStatus.FAILED]
-        }
         self.lock = threading.Lock()
 
     def spoiled(self) -> bool:
@@ -36,9 +32,9 @@ class Order:
         return self.status == OrderStatus.DELIVERED
 
     def __verify_status_trans(self, current: OrderStatus, next: OrderStatus) -> bool:
-        if current not in self.__status_trans:
+        if current not in StatusTrans:
             return False
-        valid_states = self.__status_trans[current]
+        valid_states = StatusTrans[current]
         return next in valid_states
 
     def __verify_age_trans(self, current: int, new: int) -> bool:

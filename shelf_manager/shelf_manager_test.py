@@ -79,6 +79,9 @@ class ShelfManagerTest(unittest.TestCase):
         # put 2 orders in overflow shelves
         self.shelf_manager.put_order(hot_order2)
         self.shelf_manager.put_order(cold_order2)
+
+        # Expect: overflow shelf becomes full
+        self.assertEqual(len(self.shelf_manager.peek_overflow_shelf()), 2)
         # manage shelves
         self.shelf_manager.manage_shelves()
 
@@ -134,7 +137,7 @@ class UpdateDeteriorationTest(unittest.TestCase):
 
         # mock the clock tick event
         event = threading.Event()
-        threading.Thread(target=shelf_manager.init_manager_thread, args=(event,),daemon=True).start()
+        threading.Thread(target=shelf_manager.manage_shelves, args=(event,), daemon=True).start()
         event.set()
         time.sleep(0.01)
 
