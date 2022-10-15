@@ -1,11 +1,8 @@
-import string
-import threading
-
-import json
-from errors import InvalidOrderStatus, InvalidOrderAge, InvalidOrderInherentValue, InvalidOrderError
+import threading, json
+from config import ORDER_AGE_INC
+from errors import InvalidOrderStatus, InvalidOrderInherentValue, InvalidOrderError
 from order.order_status import OrderStatus, StatusTrans
 from order.temp import Temp
-
 
 def lock_attr(func):
     def wrapper(*args, **kwargs):
@@ -14,7 +11,7 @@ def lock_attr(func):
     return wrapper
 
 class Order:
-    def __init__(self, id: string, name: string, temp: Temp, shelfLife: int, decayRate: float):
+    def __init__(self, id: str, name: str, temp: Temp, shelfLife: int, decayRate: float):
         self.__id = id
         self.__name = name
         self.__temp = temp
@@ -37,9 +34,6 @@ class Order:
         valid_states = StatusTrans[current]
         return next in valid_states
 
-    def __verify_age_trans(self, current: int, new: int) -> bool:
-        return new > current
-
     def __verify_inherent_value_trans(self, current: int, new: int) -> bool:
         return new < current
 
@@ -52,6 +46,9 @@ class Order:
             self.__order_age
             )
         return str
+
+    def inc_order_age(self) -> None:
+        self.__order_age += ORDER_AGE_INC
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
@@ -148,12 +145,6 @@ class Order:
     def order_age(self):
         return self.__order_age
 
-    @order_age.setter
-    @lock_attr
-    def order_age(self, order_age):
-        if not self.__verify_age_trans(current= self.__order_age, new = order_age):
-            raise InvalidOrderAge("can not set order age smaller than current")
-        self.__order_age = order_age
 
     @property
     @lock_attr
@@ -164,7 +155,8 @@ class Order:
     @lock_attr
     def inherent_value(self, inherent_value):
         if not self.__verify_inherent_value_trans(current= self.__inherent_value, new = inherent_value):
-            raise InvalidOrderInherentValue("can not set inherent bigger than current")
+            raise InvalidOrderInherentValue(f"""can not set inherent {inherent_value} 
+            which is bigger than current {self.__inherent_value} for {self.__name}""")
         print("{} value is about to update to {}".format(self.__name, inherent_value))
         self.__inherent_value = inherent_value
 

@@ -1,15 +1,10 @@
-import queue
-import random
-import time
-
+import queue, random, threading
+from time import sleep
 from config import API_URL
-from order.order import *
+from order.order import Order, OrderStatus
 import requests
 
-# TODO: let courior knows only order id and status
 from order.order_status import OrderStatus
-
-
 class CourierManager:
     def __init__(self, delivery_queue: queue.Queue, min_deliver_duration = 2, max_deliver_duration = 6):
         self.delivery_queue = delivery_queue
@@ -19,12 +14,12 @@ class CourierManager:
     def __get_delivery_duration(self) -> int:
         return random.randrange(self.__min_delivery_duration,self.__max_delivery_duration)
 
-    def __spawn_courior(self, order):
+    def __spawn_courior(self, order) -> None:
         delivery_time = self.__get_delivery_duration()
-        time.sleep(delivery_time)
+        sleep(delivery_time)
         self.__pickup(order, delivery_time, OrderStatus.DELIVERED)
 
-    def __pickup(self, order, delivery_time, status: OrderStatus):
+    def __pickup(self, order, delivery_time, status: OrderStatus) -> None:
         status_url = "{}/order/{}/status".format(API_URL, order.id)
         data = dict()
         data['status'] = OrderStatus[status].value
@@ -34,9 +29,10 @@ class CourierManager:
         else:
             print("Courior: {} {}".format(order.name, res.content))
 
-    def init_manager_thread(self):
+    def init_manager_thread(self) -> None:
         while True:
             order = self.delivery_queue.get()
             print("Courior: {} order received for delivery".format(order.name))
             threading.Thread(target=self.__spawn_courior, args=(order,)).start()
 
+# TODO: let courior knows only order id and name

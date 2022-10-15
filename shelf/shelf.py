@@ -1,6 +1,6 @@
 from errors import NoEmptySpaceErr
-from order.order import *
-from config import *
+from order.order import Order
+from config import OVERFLOW_DECAY_MODS
 from shelf.calc_inherent import *
 
 class Shelf:
@@ -11,7 +11,7 @@ class Shelf:
 
     @property
     def name(self):
-        return "shelf"
+        return "default shelf"
     @property
     def orders(self):
         return self.__store
@@ -25,15 +25,15 @@ class Shelf:
     def full(self) -> bool:
         return len(self.__store) >= self.__capacity
 
-    def put_order(self, order: Order):
+    def put_order(self, order: Order) -> None:
         if self.full():
             raise NoEmptySpaceErr("shelf has reached to it's max storage of {}".format(self.__capacity))
         print("Shelf: {} has successfully placed in {}".format(order.name, self.name))
         self.__store.append(order)
 
-    def update_deterioration(self):
+    def deteriorate_orders(self) -> None:
         for order in self.__store:
-            order.order_age = order.order_age + ORDER_AGE_INC
+            order.inc_order_age()
             value = calc_inherent_value(
                 shelf_life=order.shelf_life,
                 order_age= order.order_age,
@@ -43,5 +43,5 @@ class Shelf:
             order.inherent_value = value
 
     def remove_order(self, index: int)->Order:
-        print("{} Shelf: {} is removed".format(self.name, self.__store[index].name))
+        print("Shelf: {} is removed from {}".format(self.__store[index].name, self.name))
         return self.__store.pop(index)

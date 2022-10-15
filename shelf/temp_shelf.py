@@ -1,8 +1,6 @@
-from config import ALLOWABLE_DECAY_MODS, OVERFLOW_DECAY_MODS, ORDER_AGE_INC
-from errors import NoEmptySpaceErr, TempNotMatchErr
-from order.order import *
+from config import ALLOWABLE_DECAY_MODS
+from errors import TempNotMatchErr
 from shelf.shelf import *
-from shelf.calc_inherent import *
 from order.temp import Temp
 from typing import  Optional
 

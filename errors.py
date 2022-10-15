@@ -16,11 +16,11 @@ class TempNotMatchErr(Exception):
 class ShelfAlreadyExits(Exception):
     pass
 
-# Order errors
-class InvalidOrderStatus(Exception):
+class ShelfManagerAssignedAlready(Exception):
     pass
 
-class InvalidOrderAge(Exception):
+# Order errors
+class InvalidOrderStatus(Exception):
     pass
 
 class InvalidOrderInherentValue(Exception):

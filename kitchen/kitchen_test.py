@@ -1,19 +1,25 @@
-import unittest
-from kitchen import *
+import unittest,queue
+from order.order import Order, Temp, OrderStatus
+from shelf_manager.shelf_manager import ShelfManager
+from kitchen.kitchen import Kitchen
+from errors import InvalidOrderID, InvalidOrderError, InvalidOrderStatus
+from pickup_area.pickup_area import  PickupArea
 
 # TODO: define method to prepare test data
-from order.order_status import OrderStatus
-from order.temp import Temp
-
 
 class KitchenTest(unittest.TestCase):
     def setUp(self):
         delivery_queue = queue.Queue()
+
+        pickup_area = PickupArea()
+        pickup_area.add_allowable_shelf(2, Temp.HOT)
+        pickup_area.add_allowable_shelf(2, Temp.COLD)
+        pickup_area.add_overflow_shelf(2)
+
         shelf_manager = ShelfManager()
-        shelf_manager.add_allowable_shelf(2, Temp.HOT)
-        shelf_manager.add_allowable_shelf(2, Temp.COLD)
-        shelf_manager.add_overflow_shelf(2)
-        self.kitchen = Kitchen(delivery_queue, shelf_manager)
+        pickup_area = shelf_manager.assign(pickup_area)
+
+        self.kitchen = Kitchen(delivery_queue, pickup_area)
 
     def test_placement(self):
         hot_order = Order("1","Hot Dog", Temp.HOT, 1, 1)
@@ -49,6 +55,7 @@ class KitchenTest(unittest.TestCase):
         # Expect: the status becomes delivered
         self.assertEqual(self.kitchen.get_order(id = "1").status, OrderStatus.DELIVERED)
 
+
         # Expect: can not change the status of delivered/ failed order
         with self.assertRaises(InvalidOrderStatus):
             self.kitchen.update_order_status("1", OrderStatus.FAILED)
@@ -59,7 +66,4 @@ class KitchenTest(unittest.TestCase):
         with self.assertRaises(InvalidOrderID):
             self.kitchen.update_order_status("-1", OrderStatus.DELIVERED)
 
-unittest.main()
-
-# test: update order status to delivered, the order should be remove be removed
 

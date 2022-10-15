@@ -1,6 +1,7 @@
-from shelf.shelf import *
-from shelf.temp_shelf import *
-from errors import *
+from shelf.shelf import Shelf
+from shelf.temp_shelf import TempShelf
+from order.order import Temp, Order
+from errors import TempNotMatchErr, ShelfAlreadyExits, InvalidOrderID, NoEmptySpaceErr
 
 class PickupArea:
     def __init__(self):
@@ -15,18 +16,18 @@ class PickupArea:
     def overflow_shelf(self):
         return self.__overflow_shelf
 
-    def get_allowable_shelf(self, temp:Temp):
+    def get_allowable_shelf(self, temp:Temp) -> Shelf:
         if not self.__allowable_shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for temp {}".format(temp))
         return self.__allowable_shelves[temp]
 
     # TODO: refactor  as shelf factory method
-    def add_allowable_shelf(self, cap: int, temp: Temp):
+    def add_allowable_shelf(self, cap: int, temp: Temp) -> None:
         if self.__allowable_shelf_exit(temp):
             raise ShelfAlreadyExits("{} shelf already exits".format(temp))
         self.__allowable_shelves[temp] = TempShelf(cap, temp)
 
-    def add_overflow_shelf(self, cap):
+    def add_overflow_shelf(self, cap) -> None:
         if self.__overflow_shelf is not None:
             raise ShelfAlreadyExits("overflow shelf already exits")
         self.__overflow_shelf = Shelf(cap)
@@ -48,13 +49,12 @@ class PickupArea:
             return True
         return False
 
-    def remove_order(self, order_id: string):
+    def remove_order(self, order_id: str) -> Order:
         orders = self.order_iterator()
         for (index, order, shelf ) in orders:
             if order.id == order_id:
                 print("Pickup Area: {} has is about to be removed from shelf".format(order.name))
-                shelf.remove_order(index)
-                return
+                return shelf.remove_order(index)
         raise InvalidOrderID("order id {} not exists".format(id))
 
     def put_order(self, order: Order) -> Exception:

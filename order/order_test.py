@@ -1,9 +1,7 @@
-
-# state transition
 import unittest
-from errors import *
-from order import *
-from temp import *
+from order.order import  Order, OrderStatus, Temp
+from errors import InvalidOrderStatus, InvalidOrderInherentValue
+from config import ORDER_AGE_INC
 
 class OrderTest(unittest.TestCase):
     def setUp(self):
@@ -21,17 +19,24 @@ class OrderTest(unittest.TestCase):
         # Expect: order status has changed to WAITING
         self.assertEqual(self.order.status, OrderStatus.WAITING)
         self.order.status = OrderStatus.DELIVERED
-        self.assertEqual(self.order.status, OrderStatus.DELIVERED)
+        self.assertTrue(self.order.delivered())
 
         with self.assertRaises(InvalidOrderStatus):
             self.order.status = OrderStatus.FAILED
 
     def test_update_order_age(self):
-        self.order.order_age = 10
+        # Expect: initial order age is zero
+        self.assertEqual(self.order.order_age, 0)
+        self.order.inc_order_age()
+        # Expect: increment order age
+        self.assertEqual(self.order.order_age, ORDER_AGE_INC)
+        self.order.inc_order_age()
+        # Expect: increment order age
+        self.assertEqual(self.order.order_age, ORDER_AGE_INC*2)
 
-        #Expect: the new order age must greather than current
-        with self.assertRaises(InvalidOrderAge):
-            self.order.order_age = 5
+        #Expect: unable to set order age directly
+        with self.assertRaises(AttributeError):
+            self.order.order_age = -1
 
     def test_update_inherent_value(self):
       self.assertEqual(self.order.inherent_value, 1)
@@ -39,4 +44,7 @@ class OrderTest(unittest.TestCase):
       with self.assertRaises(InvalidOrderInherentValue):
           self.order.inherent_value = 2
 
-unittest.main()
+      self.order.inherent_value = -1
+      # Expect :order is spoiled
+      self.assertEqual(self.order.inherent_value, -1)
+      self.assertTrue(self.order.spoiled())
