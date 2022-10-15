@@ -1,8 +1,8 @@
 import queue
 from pickup_area.pickup_area import PickupArea
-from shelf_manager.shelf_manager import ShelfManager
-from errors import InvalidOrderStatus, InvalidOrderID, InvalidOrderError
-from order.order import OrderStatus,Order, Temp
+from errors import InvalidOrderID, InvalidOrderError
+from order.order import OrderStatus, Order
+
 
 class Kitchen:
     def __init__(self, delivery_queue: queue.Queue, pickup_area: PickupArea):
@@ -32,7 +32,7 @@ class Kitchen:
         self.__delivery_queue.put(order)
         order.status = OrderStatus.WAITING
 
-    def get_order(self, id) -> Order:
-        if id not in self.__orders.keys():
-            raise InvalidOrderID("order id {} not exists".format(id))
-        return self.__orders[id]
+    def get_order(self, order_id) -> Order:
+        if order_id not in self.__orders.keys():
+            raise InvalidOrderID("order id {} not exists".format(order_id))
+        return self.__orders[order_id]

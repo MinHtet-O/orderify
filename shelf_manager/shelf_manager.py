@@ -4,6 +4,7 @@ from order.order import Order, OrderStatus
 from errors import ShelfManagerAssignedAlready
 from typing import Optional
 
+
 class ShelfManager:
     def __init__(self):
         self.__pickup_area: Optional[PickupArea] = None
@@ -30,10 +31,11 @@ class ShelfManager:
             index = random.randint(0, shelf.size - 1)
             order = shelf.remove_order(index)
             order.status = OrderStatus.FAILED
+            return order
 
     def __discard_spoiled_orders(self):
         orders = self.__pickup_area.order_iterator()
-        for (index, order, shelf ) in orders:
+        for (index, order, shelf) in orders:
             if order.spoiled():
                 print("ShelfManager: {} has spoiled and about to be removed from shelf".format(order.name))
                 order.status = OrderStatus.FAILED

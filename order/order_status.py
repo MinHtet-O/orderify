@@ -3,12 +3,11 @@ from errors import InvalidOrderError
 
 
 class OrderStatus(str, Enum):
-
-    PENDING = "PENDING" # pending to be accepted from kitchen
-    WAITING = "WAITING" # cooked and waiting for delivery
+    PENDING = "PENDING"  # pending to be accepted from kitchen
+    WAITING = "WAITING"  # cooked and waiting for delivery
     DELIVERED = "DELIVERED"
     FAILED = "FAILED"
-    REJECTED = "REJECTED" # rejected from the kitchen
+    REJECTED = "REJECTED"  # rejected from the kitchen
 
     @staticmethod
     def decode_json(json):
@@ -20,6 +19,7 @@ class OrderStatus(str, Enum):
         except Exception as e:
             raise InvalidOrderError("{} is not valid status".format(status))
         return status
+
 
 StatusTrans = {
     # from : to

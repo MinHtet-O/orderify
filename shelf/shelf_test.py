@@ -5,16 +5,17 @@ from shelf.temp_shelf import TempShelf
 from order.order import Order, Temp
 from errors import TempNotMatchErr, NoEmptySpaceErr
 
+
 class ShelfTest(unittest.TestCase):
     def setUp(self):
-        self.overflow_shelf: Shelf = Shelf(capacity= 2)
+        self.overflow_shelf: Shelf = Shelf(capacity=2)
 
     def prepare_orders(self):
         # define external helper method to generate test dta
-        order1 = Order(id="1", name="Pizza", temp=Temp.HOT, shelfLife=1, decayRate=1)
-        order2 = Order(id="2", name="Hot Dog", temp=Temp.HOT, shelfLife=1, decayRate=1)
-        order3 = Order(id="3", name="Burger", temp=Temp.HOT, shelfLife=1, decayRate=1)
-        return (order1,order2,order3)
+        order1 = Order(id="1", name="Pizza", temp=Temp.HOT, shelf_life=1, decay_rate=1)
+        order2 = Order(id="2", name="Hot Dog", temp=Temp.HOT, shelf_life=1, decay_rate=1)
+        order3 = Order(id="3", name="Burger", temp=Temp.HOT, shelf_life=1, decay_rate=1)
+        return order1, order2, order3
 
     def test_put_orders(self):
         order1, order2, order3 = self.prepare_orders()
@@ -29,11 +30,10 @@ class ShelfTest(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.overflow_shelf.orders = [order3]
 
-
     def test_temp_match(self):
-        hot_shelf: Shelf = TempShelf(capacity=2, temp = Temp.HOT)
-        cold_order = Order(id="1", name="Ice Cream", temp=Temp.FROZEN, shelfLife=1, decayRate=1)
-        hot_order = Order(id="2", name="Noodle", temp=Temp.HOT, shelfLife=1, decayRate=1)
+        hot_shelf: Shelf = TempShelf(capacity=2, temp=Temp.HOT)
+        cold_order = Order(id="1", name="Ice Cream", temp=Temp.FROZEN, shelf_life=1, decay_rate=1)
+        hot_order = Order(id="2", name="Noodle", temp=Temp.HOT, shelf_life=1, decay_rate=1)
         # Expect: unable to accept order of different temp
         with self.assertRaises(TempNotMatchErr):
             hot_shelf.put_order(cold_order)
@@ -65,12 +65,11 @@ class ShelfTest(unittest.TestCase):
         # Expect: only order 1 exits in the shelf at the end
         self.assertEqual(self.overflow_shelf.orders, [order1])
 
-        #TODO: test deteiorate orders
 
 class CalcInherentValueTest(unittest.TestCase):
     def test_food_inherent_value(self):
         test_data = [
-            #shelf_life, decay_rate, age, shelfdecay, value
+            # shelf_life, decay_rate, age, shelf decay, value
             (300, 0.45, 1, 2, 0.99366667),
             (300, 0.45, 2, 2, 0.98733333),
             (300, 0.45, 3, 2, 0.981),
@@ -79,9 +78,9 @@ class CalcInherentValueTest(unittest.TestCase):
 
         for data in test_data:
             value = calc_inherent_value(
-                shelf_life= data[0],
-                decay_rate= data[1],
-                order_age= data[2],
+                shelf_life=data[0],
+                decay_rate=data[1],
+                order_age=data[2],
                 decay_mod=data[3]
             )
             self.assertEqual(value, data[4])

@@ -1,14 +1,16 @@
 import time, unittest, threading
 from order.order import Temp, Order, OrderStatus
-from pickup_area.pickup_area import  PickupArea
+from pickup_area.pickup_area import PickupArea
 from shelf_manager.shelf_manager import ShelfManager
 from errors import InvalidOrderID, ShelfManagerAssignedAlready
 
 from shelf_manager import *
 
-def tickEvent(event: threading.Event):
+
+def tick_event(event: threading.Event):
     event.set()
     time.sleep(0.01)
+
 
 class ShelfManagerTest(unittest.TestCase):
     def setUp(self):
@@ -33,11 +35,11 @@ class ShelfManagerTest(unittest.TestCase):
             self.shelf_manager.assign(pickup_area_2)
 
     def test_remove_order_if_full(self):
-        hot_order1 = Order(id="1", name="Pizza", temp=Temp.HOT, shelfLife=1, decayRate=1)
-        hot_order2 = Order(id="2", name="Hot Dog", temp=Temp.HOT, shelfLife=1, decayRate=1)
-        cold_order1 = Order(id="3", name="Smoothie", temp=Temp.COLD, shelfLife=1, decayRate=1)
-        cold_order2 = Order(id="4", name="Pepsi", temp=Temp.COLD, shelfLife=1, decayRate=1)
-        frozen_order = Order(id="5", name="Ice Cream", temp=Temp.FROZEN, shelfLife=1, decayRate=1)
+        hot_order1 = Order(id="1", name="Pizza", temp=Temp.HOT, shelf_life=1, decay_rate=1)
+        hot_order2 = Order(id="2", name="Hot Dog", temp=Temp.HOT, shelf_life=1, decay_rate=1)
+        cold_order1 = Order(id="3", name="Smoothie", temp=Temp.COLD, shelf_life=1, decay_rate=1)
+        cold_order2 = Order(id="4", name="Pepsi", temp=Temp.COLD, shelf_life=1, decay_rate=1)
+        frozen_order = Order(id="5", name="Ice Cream", temp=Temp.FROZEN, shelf_life=1, decay_rate=1)
 
         # put 1 order in each allowable shelves
         self.pickup_area.put_order(hot_order1)
@@ -51,18 +53,18 @@ class ShelfManagerTest(unittest.TestCase):
         self.assertEqual(len(self.pickup_area.overflow_shelf.orders), 2)
 
         # trigger clock tick
-        tickEvent(self.manage_shelf_event)
+        tick_event(self.manage_shelf_event)
 
         # Expect: random order has dropped from overflow shelves
         # Expect: now overflow shelf has only one order
         self.assertEqual(len(self.pickup_area.overflow_shelf.orders), 1)
 
     def test_order_replacement(self):
-        perishable_order = Order(id="1", name="Perishable Pizza", temp=Temp.HOT, shelfLife=300, decayRate=20)
-        hot_order = Order(id="2", name="Hot Dog", temp=Temp.HOT, shelfLife=300, decayRate=0.45)
-        cold_order1 = Order(id="4", name="Smoothie", temp=Temp.COLD, shelfLife=300, decayRate=0.45)
-        cold_order2 = Order(id="4", name="Pepsi", temp=Temp.COLD, shelfLife=300, decayRate=0.45)
-        frozen_order = Order(id="6", name="Ice Cream", temp=Temp.FROZEN, shelfLife=300, decayRate=0.45)
+        perishable_order = Order(id="1", name="Perishable Pizza", temp=Temp.HOT, shelf_life=300, decay_rate=20)
+        hot_order = Order(id="2", name="Hot Dog", temp=Temp.HOT, shelf_life=300, decay_rate=0.45)
+        cold_order1 = Order(id="4", name="Smoothie", temp=Temp.COLD, shelf_life=300, decay_rate=0.45)
+        cold_order2 = Order(id="4", name="Pepsi", temp=Temp.COLD, shelf_life=300, decay_rate=0.45)
+        frozen_order = Order(id="6", name="Ice Cream", temp=Temp.FROZEN, shelf_life=300, decay_rate=0.45)
 
         # put 1 order in each allowable shelves
         self.pickup_area.put_order(perishable_order)
@@ -75,7 +77,7 @@ class ShelfManagerTest(unittest.TestCase):
         self.assertTrue(self.pickup_area.overflow_shelf.full())
 
         # trigger clock tick
-        tickEvent(self.manage_shelf_event)
+        tick_event(self.manage_shelf_event)
 
         # Expect: discarded spoiled order
         self.assertFalse(perishable_order in self.pickup_area.get_allowable_shelf(Temp.HOT).orders)
@@ -89,10 +91,9 @@ class ShelfManagerTest(unittest.TestCase):
         self.assertFalse(hot_order in self.pickup_area.overflow_shelf.orders)
 
     def test_deterioration_overtime(self):
-
         # create two order with same shelf life and decay rate
-        hot_order1 = Order(id="1", name="Pizza", temp=Temp.HOT, shelfLife=300, decayRate=0.45)
-        hot_order2 = Order(id="2", name="Pizza", temp=Temp.HOT, shelfLife=300, decayRate=0.45)
+        hot_order1 = Order(id="1", name="Pizza", temp=Temp.HOT, shelf_life=300, decay_rate=0.45)
+        hot_order2 = Order(id="2", name="Pizza", temp=Temp.HOT, shelf_life=300, decay_rate=0.45)
 
         # put first order in the allowable shelf
         self.pickup_area.put_order(hot_order1)
@@ -100,9 +101,8 @@ class ShelfManagerTest(unittest.TestCase):
         self.pickup_area.put_order(hot_order2)
 
         # trigger clock tick
-        tickEvent(self.manage_shelf_event)
+        tick_event(self.manage_shelf_event)
 
         # Expect: after clock interval, each order receive different inherent_value in different shelves
         self.assertEqual(self.pickup_area.get_allowable_shelf(Temp.HOT).orders[0].inherent_value, 0.855)
         self.assertEqual(self.pickup_area.overflow_shelf.orders[0].inherent_value, 0.81)
-

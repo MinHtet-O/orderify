@@ -3,9 +3,10 @@ from shelf.temp_shelf import TempShelf
 from order.order import Temp, Order
 from errors import TempNotMatchErr, ShelfAlreadyExits, InvalidOrderID, NoEmptySpaceErr
 
+
 class PickupArea:
     def __init__(self):
-        self.__allowable_shelves:dict[Temp, Shelf] = {}
+        self.__allowable_shelves: dict[Temp, Shelf] = {}
         self.__overflow_shelf: Shelf = None
 
     @property
@@ -16,7 +17,7 @@ class PickupArea:
     def overflow_shelf(self):
         return self.__overflow_shelf
 
-    def get_allowable_shelf(self, temp:Temp) -> Shelf:
+    def get_allowable_shelf(self, temp: Temp) -> Shelf:
         if not self.__allowable_shelf_exit(temp):
             raise TempNotMatchErr("no shelf match for temp {}".format(temp))
         return self.__allowable_shelves[temp]
@@ -35,7 +36,7 @@ class PickupArea:
     def all_shelves_full(self) -> bool:
         return self.overflow_shelf_full() and self.allowable_shelves_full()
 
-    def allowable_shelves_full(self)-> bool:
+    def allowable_shelves_full(self) -> bool:
         for key in self.__allowable_shelves:
             if not self.__allowable_shelves[key].full():
                 return False
@@ -51,7 +52,7 @@ class PickupArea:
 
     def remove_order(self, order_id: str) -> Order:
         orders = self.order_iterator()
-        for (index, order, shelf ) in orders:
+        for (index, order, shelf) in orders:
             if order.id == order_id:
                 print("Pickup Area: {} has is about to be removed from shelf".format(order.name))
                 return shelf.remove_order(index)
@@ -77,7 +78,7 @@ class PickupArea:
         shelves = self.shelf_iterator()
         for shelf in shelves:
             for index, order in enumerate(shelf.orders):
-                yield (index, order, shelf)
+                yield index, order, shelf
 
     def shelf_iterator(self):
         for key in self.__allowable_shelves:

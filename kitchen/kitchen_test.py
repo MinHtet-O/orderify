@@ -1,9 +1,12 @@
-import unittest,queue
-from order.order import Order, Temp, OrderStatus
-from shelf_manager.shelf_manager import ShelfManager
-from kitchen.kitchen import Kitchen
+import queue
+import unittest
+
 from errors import InvalidOrderID, InvalidOrderError, InvalidOrderStatus
-from pickup_area.pickup_area import  PickupArea
+from kitchen.kitchen import Kitchen
+from order.order import Order, Temp, OrderStatus
+from pickup_area.pickup_area import PickupArea
+from shelf_manager.shelf_manager import ShelfManager
+
 
 # TODO: define method to prepare test data
 
@@ -22,17 +25,17 @@ class KitchenTest(unittest.TestCase):
         self.kitchen = Kitchen(delivery_queue, pickup_area)
 
     def test_placement(self):
-        hot_order = Order("1","Hot Dog", Temp.HOT, 1, 1)
+        hot_order = Order("1", "Hot Dog", Temp.HOT, 1, 1)
         cold_order = Order("2", "Ice Cream", Temp.COLD, 1, 1)
         self.kitchen.put_order(hot_order)
         self.kitchen.put_order(cold_order)
 
         # Expect: orders are placed in the order list
-        self.assertEqual(self.kitchen.get_order(id = "1"), hot_order)
-        self.assertEqual(self.kitchen.get_order(id = "2"), cold_order)
+        self.assertEqual(self.kitchen.get_order(order_id="1"), hot_order)
+        self.assertEqual(self.kitchen.get_order(order_id="2"), cold_order)
 
         # put another order with duplicate order id
-        hot_order_duplicate = Order("1","Burger", Temp.HOT, 1, 1)
+        hot_order_duplicate = Order("1", "Burger", Temp.HOT, 1, 1)
         # Expect: can not receive order with duplicate order id
         with self.assertRaises(InvalidOrderError):
             self.kitchen.put_order(hot_order_duplicate)
@@ -44,17 +47,16 @@ class KitchenTest(unittest.TestCase):
             self.kitchen.get_order("-1")
 
     def test_update_order_status(self):
-        hot_order = Order("1","Hot Dog", Temp.HOT, 1, 1)
+        hot_order = Order("1", "Hot Dog", Temp.HOT, 1, 1)
         self.kitchen.put_order(hot_order)
 
         # Expect: the order status is waiting to deliver
-        self.assertEqual(self.kitchen.get_order(id = "1").status, OrderStatus.WAITING)
+        self.assertEqual(self.kitchen.get_order(order_id="1").status, OrderStatus.WAITING)
 
         # update the order status
         self.kitchen.update_order_status("1", OrderStatus.DELIVERED)
         # Expect: the status becomes delivered
-        self.assertEqual(self.kitchen.get_order(id = "1").status, OrderStatus.DELIVERED)
-
+        self.assertEqual(self.kitchen.get_order(order_id="1").status, OrderStatus.DELIVERED)
 
         # Expect: can not change the status of delivered/ failed order
         with self.assertRaises(InvalidOrderStatus):
@@ -65,5 +67,3 @@ class KitchenTest(unittest.TestCase):
             self.kitchen.update_order_status("999", OrderStatus.DELIVERED)
         with self.assertRaises(InvalidOrderID):
             self.kitchen.update_order_status("-1", OrderStatus.DELIVERED)
-
-

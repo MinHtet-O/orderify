@@ -4,8 +4,8 @@ from order.temp import Temp
 API_URL = "http://127.0.0.1:5000"
 
 # courior
-MIN_DELIVER_DURATION=2
-MAX_DELIVER_DURATION=6
+MIN_DELIVER_DURATION = 2
+MAX_DELIVER_DURATION = 6
 
 # order
 ORDER_INTERVAL = 2
@@ -26,4 +26,3 @@ ORDER_AGE_INC = 30
 
 # tick events every clock_interval
 CLOCK_INTERVAL = 1
-

@@ -14,6 +14,6 @@ class Temp(str, Enum):
         temp = json['temp'].upper()
         try:
             temp = OrderStatus[temp]
-        except Exception as e:
+        except:
             raise InvalidOrderError("{} is not valid temp".format(temp))
         return temp

@@ -4,19 +4,22 @@ from errors import InvalidOrderStatus, InvalidOrderInherentValue, InvalidOrderEr
 from order.order_status import OrderStatus, StatusTrans
 from order.temp import Temp
 
+
 def lock_attr(func):
     def wrapper(*args, **kwargs):
         with args[0].lock:
             return func(*args, **kwargs)
+
     return wrapper
 
+
 class Order:
-    def __init__(self, id: str, name: str, temp: Temp, shelfLife: int, decayRate: float):
+    def __init__(self, id: str, name: str, temp: Temp, shelf_life: int, decay_rate: float):
         self.__id = id
         self.__name = name
         self.__temp = temp
-        self.__shelf_life = shelfLife
-        self.__decay_rate = decayRate
+        self.__shelf_life = shelf_life
+        self.__decay_rate = decay_rate
         self.__status = OrderStatus.PENDING
         self.__order_age = 0
         self.__inherent_value = 1
@@ -38,14 +41,14 @@ class Order:
         return new < current
 
     def __repr__(self):
-        str = "ID: {}, name: {}, temp: {}, value: {}, order_age {}".format(
+        order_str = "ID: {}, name: {}, temp: {}, value: {}, order_age {}".format(
             self.__id,
             self.__name,
             self.__temp,
             self.__inherent_value,
             self.__order_age
-            )
-        return str
+        )
+        return order_str
 
     def inc_order_age(self) -> None:
         self.__order_age += ORDER_AGE_INC
@@ -57,15 +60,15 @@ class Order:
     @staticmethod
     def decode_json(json):
         # TODO: refactor as custom validator method
-        if not 'id' in json:
+        if 'id' not in json:
             raise InvalidOrderError("there is no id field")
-        if not 'name' in json:
+        if 'name' not in json:
             raise InvalidOrderError("there is no name field")
-        if not 'temp' in json:
+        if 'temp' not in json:
             raise InvalidOrderError("there is no temp field")
-        if not 'shelfLife' in json:
+        if 'shelfLife' not in json:
             raise InvalidOrderError("there is no shelfLife field")
-        if not 'decayRate' in json:
+        if 'decayRate' not in json:
             raise InvalidOrderError("there is no decayRate field")
 
         temp = json["temp"].upper()
@@ -75,7 +78,7 @@ class Order:
         shelf_life = json["shelfLife"]
         decay_rate = json["decayRate"]
 
-        order = Order(id,name, temp, shelf_life, decay_rate)
+        order = Order(id, name, temp, shelf_life, decay_rate)
         return order
 
     @property
@@ -136,7 +139,7 @@ class Order:
     @status.setter
     @lock_attr
     def status(self, status):
-        if not self.__verify_status_trans(current= self.__status,next= status):
+        if not self.__verify_status_trans(current=self.__status, next=status):
             raise InvalidOrderStatus("can not change order to {} which is already {}".format(status, self.__status))
         self.__status = status
 
@@ -144,7 +147,6 @@ class Order:
     @lock_attr
     def order_age(self):
         return self.__order_age
-
 
     @property
     @lock_attr
@@ -154,7 +156,7 @@ class Order:
     @inherent_value.setter
     @lock_attr
     def inherent_value(self, inherent_value):
-        if not self.__verify_inherent_value_trans(current= self.__inherent_value, new = inherent_value):
+        if not self.__verify_inherent_value_trans(current=self.__inherent_value, new=inherent_value):
             raise InvalidOrderInherentValue(f"""can not set inherent {inherent_value} 
             which is bigger than current {self.__inherent_value} for {self.__name}""")
         print("{} value is about to update to {}".format(self.__name, inherent_value))
