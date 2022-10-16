@@ -24,9 +24,30 @@ But if we have requirements like getting all orders in the current system, it wo
 ### Shelf
 Shelf is the basic data storage for the pickup area. Each shelf maintains it's own decay modifier.
 There are normal overflow shelf and shelf with temperature, which can only store the order of the same temperature. 
-Each shelf can only store the order up to it's maximum capacity size.
+Each shelf can only store the orders up to it's maximum capacity size.
 
 ### Pickup Area
 Pickup Area is the main data structure that interacts with kitchen for the shelf management.
 Each pickup area can hold one overshelf and multiple allowable shelves with the specific temperature.
 Although it maintains two separate data store internally, the complexity is hidden and shelf/ order iterators are exposed for shelf policies.
+
+### Order
+
+Data class to store each individual order. The status, order age and inherent value ( deterioration value) will be changed during order life cycle.
+The status can only be changed from one permitted state to another. There is the internal thread lock for concurrency control for each attribute. 
+Currently, it's regular thread lock. But it should be replaced with read/write lock for better performance as further improvement.
+
+### Shelf Policies
+
+Shelf Policies are applied to each shelves through pickup are.
+Those policies can be removed, changed order or replaced individually during run time. 
+Currently, there are only four policies that
+- calculate and update deterioration for each order
+- discard spoiled orders
+- discard random order if all shelves are full
+- move order from one shelf to another
+Additional policies can be implemented through ShelfPolicy interface.
+
+### Courior
+
+
