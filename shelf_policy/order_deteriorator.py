@@ -10,7 +10,7 @@ class OrderDeteriorator(ShelfPolicy):
         orders = pickup_area.order_iterator()
         for (index, order, shelf) in orders:
             order.inc_order_age()
-            value = self.__calc_inherent_value(
+            value = self.calc_inherent_value(
                 shelf_life=order.shelf_life,
                 order_age=order.order_age,
                 decay_rate=order.decay_rate,
@@ -19,7 +19,7 @@ class OrderDeteriorator(ShelfPolicy):
             print(f"ShelfPolicy: {order.name} value about to become {order.inherent_value}")
             order.inherent_value = value
 
-    def __calc_inherent_value(self, shelf_life, order_age, decay_rate, decay_mod) -> float:
+    def calc_inherent_value(self, shelf_life, order_age, decay_rate, decay_mod) -> float:
         value = (shelf_life - order_age - decay_rate * (order_age * decay_mod)) / shelf_life
         value = (round(value, 8))
         return value

@@ -23,6 +23,7 @@ pickup_area.add_allowable_shelf(allowable_shelf_size, Temp.COLD)
 pickup_area.add_allowable_shelf(allowable_shelf_size, Temp.FROZEN)
 pickup_area.add_overflow_shelf(allowable_shelf_size)
 
+# init shelf policies
 shelf_policies = ShelfPolicyAggregator(
     OrderDeteriorator(),
     SpoiledOrderRemover(),
@@ -45,7 +46,7 @@ courior_manager = CourierManager(
 
 # init threads
 threading.Thread(target=courior_manager.init_manager_thread).start()
-threading.Thread(target=shelf_policies.apply_policies_per_interval, args=(pickup_area,)).start()
+threading.Thread(target=shelf_policies.apply_per_interval, args=(pickup_area,)).start()
 threading.Thread(target=init_order_client).start()
 
 # init API server
@@ -70,8 +71,8 @@ def post_order():
 @app.route('/order/<string:order_id>/status', methods=['PUT'])
 def update_order_status(order_id):
     try:
-        json = request.get_json()
-        status = OrderStatus.decode_json(json)
+        json_data = request.get_json()
+        status = OrderStatus.decode_json(json_data)
         kitchen.update_order_status(order_id, status)
     except InvalidOrderID as e:
         return f"invalid order id: {str(e)}", HTTP_STATUS_INTERNAL_ERROR

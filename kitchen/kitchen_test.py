@@ -19,9 +19,6 @@ class KitchenTest(unittest.TestCase):
         pickup_area.add_allowable_shelf(2, Temp.COLD)
         pickup_area.add_overflow_shelf(2)
 
-        shelf_manager = ShelfPolicyAggregator()
-        pickup_area = shelf_manager.assign(pickup_area)
-
         self.kitchen = Kitchen(delivery_queue, pickup_area)
 
     def test_placement(self):

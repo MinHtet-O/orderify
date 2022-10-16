@@ -17,7 +17,7 @@ class ShelfPolicyAggregator:
         self.__pickup_area = pickup_area
         return pickup_area
 
-    def apply_policies_per_interval(self, pickup_area) -> None:
+    def apply_per_interval(self, pickup_area) -> None:
         if len(self.__shelf_policies) == 0:
             print("PolicyAggregator: no policy to apply")
             return
