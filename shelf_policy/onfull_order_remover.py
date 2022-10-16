@@ -4,8 +4,8 @@ from order.order import Order, OrderStatus
 from shelf_policy.shelf_policy_interface import ShelfPolicy
 import random
 
+# remove order if all shelves are full
 class OnFullOrderRemover(ShelfPolicy):
-    # remove order if overflow is full
     def apply_policy(self, pickup_area: PickupArea):
         if pickup_area.all_shelves_full():
             shelf = pickup_area.overflow_shelf

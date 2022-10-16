@@ -2,11 +2,9 @@ from order.order import OrderStatus
 from pickup_area.pickup_area import PickupArea
 from shelf_policy.shelf_policy_interface import ShelfPolicy
 
-
+# update deterioration for each order
 class OrderDeteriorator(ShelfPolicy):
-
     def apply_policy(self, pickup_area: PickupArea):
-        # update deterioration value for each order
         orders = pickup_area.order_iterator()
         for (index, order, shelf) in orders:
             order.inc_order_age()

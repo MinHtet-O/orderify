@@ -8,3 +8,8 @@
 5. Run the app <br>```python3 main.py```
 
 For Unix/ Linux system, you can install dependencies, tests and run app in one command.<br>```make test```
+
+#### Architecture Diagram
+
+## Process Diagram
+![alt text](https://github.com/MinHtet-O/orderify/blob/main/resources/diagrams/3_final_after_refactoring.png)

@@ -2,8 +2,8 @@ from order.order import OrderStatus
 from pickup_area.pickup_area import PickupArea
 from shelf_policy.shelf_policy_interface import ShelfPolicy
 
+# move order from overflow shelf to allowable shelf
 class OrderRelocator(ShelfPolicy):
-    # OrderRelocator
     def apply_policy(self, pickup_area: PickupArea):
         pickup_area = pickup_area
         if pickup_area.overflow_shelf_full() and (not pickup_area.allowable_shelves_full()):
