@@ -19,7 +19,9 @@ Kitchen acts as the central orchestrator between the order client, courier, and 
 It serves the API handlers, dispatches the delivery, and maintains a list of orders.
 The orders are stored in the hash map of `````[ order_id ] -> Order````` for fast retrieval of the orders for kitchen handlers.
 
-But if we have requirements like getting all orders in the current system, it would be inefficient to iterate the hash map for each order within the system. Also, it's not memory efficient to hold all the orders in the hash map.  As an improvement, the orders which are already failed or have been delivered should be moved to the list as archived orders.
+But if we have requirements like getting all orders in the current system, it would be inefficient to iterate 
+the hash map for each order within the system. Also, it's not memory efficient to hold all the orders in the hash map compared to list. 
+As an improvement, the orders which are already failed or have been delivered should be moved to the list as archived orders.
 
 ### Shelf
 Shelf is the basic data storage for the pickup area. Each shelf maintains it's own decay modifier.
