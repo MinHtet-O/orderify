@@ -1,3 +1,5 @@
+import threading
+
 from errors import NoEmptySpaceErr
 from order.order import Order
 from config import OVERFLOW_DECAY_MODS
@@ -7,10 +9,12 @@ class Shelf:
         self.__store: list[Order] = []
         self.__capacity = capacity
         self.__decay_mod = decay_mod
+        self.__lock = threading.Lock()
 
     @property
     def decay_mod(self):
-        return self.__decay_mod
+        with self.__lock:
+            return self.__decay_mod
 
     @property
     def name(self):

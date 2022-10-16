@@ -1,7 +1,7 @@
 import time
 import requests
 import json
-from config import API_URL, ORDER_INTERVAL
+from config import API_URL, ORDER_CLIENT_INTERVAL
 
 ORDER_URL = '{}/order'.format(API_URL)
 order_file_path = "./resources/orders.json"
@@ -9,7 +9,7 @@ order_file_path = "./resources/orders.json"
 
 def generate_order(orders):
     for order in orders:
-        time.sleep(ORDER_INTERVAL)
+        time.sleep(ORDER_CLIENT_INTERVAL)
         resp = requests.post(ORDER_URL, json=order)
         status = resp.status_code
         if status != 200:

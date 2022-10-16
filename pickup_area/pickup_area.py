@@ -22,7 +22,6 @@ class PickupArea:
             raise TempNotMatchErr("no shelf match for temp {}".format(temp))
         return self.__allowable_shelves[temp]
 
-    # TODO: refactor  as shelf factory method
     def add_allowable_shelf(self, cap: int, temp: Temp) -> None:
         if self.__allowable_shelf_exit(temp):
             raise ShelfAlreadyExits("{} shelf already exits".format(temp))

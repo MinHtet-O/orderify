@@ -1,4 +1,3 @@
-# TODO: extract config as file
 from order.temp import Temp
 
 API_URL = "http://127.0.0.1:5000"
@@ -7,12 +6,12 @@ API_URL = "http://127.0.0.1:5000"
 MIN_DELIVER_DURATION = 2
 MAX_DELIVER_DURATION = 6
 
-# order
-ORDER_INTERVAL = 2
+# order client
+ORDER_CLIENT_INTERVAL = 2
 
 # shelf
-allowable_shelf_size = 1
-overflow_shelf_size = 1
+allowable_shelf_size = 10
+overflow_shelf_size = 15
 ALLOWABLE_DECAY_MODS = {
     Temp.HOT: 1,
     Temp.COLD: 1,
@@ -26,3 +25,5 @@ ORDER_AGE_INC = 30
 
 # shelf management
 SHELF_POLICY_INTERVAL = 1
+
+# TODO: read config from yaml
