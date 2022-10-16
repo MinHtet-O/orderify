@@ -11,6 +11,10 @@ class Shelf:
         self.__decay_mod = decay_mod
 
     @property
+    def decay_mod(self):
+        return self.__decay_mod
+
+    @property
     def name(self):
         return "default shelf"
 
@@ -31,6 +35,7 @@ class Shelf:
         print("Shelf: {} has successfully placed in {}".format(order.name, self.name))
         self.__store.append(order)
 
+    # TODO: refactor into deteriorator
     def deteriorate_orders(self) -> None:
         for order in self.__store:
             order.inc_order_age()

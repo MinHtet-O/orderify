@@ -16,6 +16,7 @@ class Kitchen:
         order = self.__orders[id]
         order.status = new_status
         if new_status == OrderStatus.DELIVERED:
+            print(f"Kitchen: {order.name} is about to be picked up")
             self.__pickup_area.remove_order(order.id)
         return
 

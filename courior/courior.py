@@ -23,7 +23,7 @@ class CourierManager:
         sleep(delivery_time)
         self.__pickup(order, delivery_time, OrderStatus.DELIVERED)
 
-    def __pickup(order, delivery_time, status: OrderStatus) -> None:
+    def __pickup(self, order, delivery_time, status: OrderStatus) -> None:
         status_url = "{}/order/{}/status".format(API_URL, order.id)
         data = dict()
         data['status'] = OrderStatus[status].value

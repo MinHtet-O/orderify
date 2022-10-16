@@ -1,10 +1,10 @@
 import time, unittest, threading
 from order.order import Temp, Order, OrderStatus
 from pickup_area.pickup_area import PickupArea
-from shelf_manager.shelf_manager import ShelfManager
+from shelf_policy.policy_aggregator import ShelfPolicyAggregator
 from errors import InvalidOrderID, ShelfManagerAssignedAlready
 
-from shelf_manager import *
+from shelf_policy import *
 
 
 def tick_event(event: threading.Event):
@@ -15,7 +15,7 @@ def tick_event(event: threading.Event):
 class ShelfManagerTest(unittest.TestCase):
     def setUp(self):
         pickup_area = PickupArea()
-        self.shelf_manager = ShelfManager()
+        self.shelf_manager = ShelfPolicyAggregator()
         pickup_area.add_allowable_shelf(1, Temp.HOT)
         pickup_area.add_allowable_shelf(1, Temp.COLD)
         pickup_area.add_allowable_shelf(1, Temp.FROZEN)

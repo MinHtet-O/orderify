@@ -5,7 +5,7 @@ from errors import InvalidOrderID, InvalidOrderError, InvalidOrderStatus
 from kitchen.kitchen import Kitchen
 from order.order import Order, Temp, OrderStatus
 from pickup_area.pickup_area import PickupArea
-from shelf_manager.shelf_manager import ShelfManager
+from shelf_policy.policy_aggregator import ShelfPolicyAggregator
 
 
 # TODO: define method to prepare test data
@@ -19,7 +19,7 @@ class KitchenTest(unittest.TestCase):
         pickup_area.add_allowable_shelf(2, Temp.COLD)
         pickup_area.add_overflow_shelf(2)
 
-        shelf_manager = ShelfManager()
+        shelf_manager = ShelfPolicyAggregator()
         pickup_area = shelf_manager.assign(pickup_area)
 
         self.kitchen = Kitchen(delivery_queue, pickup_area)

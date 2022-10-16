@@ -1,0 +1,166 @@
+ShelfManager: no shelf to manage
+ * Serving Flask app 'main'
+ * Debug mode: off
+Shelf: Banana Split has successfully placed in FROZEN shelf
+Courior: Banana Split order received for delivery
+Shelf: McFlury has successfully placed in default shelf
+Courior: McFlury order received for delivery
+Shelf: Acai Bowl has successfully placed in COLD shelf
+Courior: Acai Bowl order received for delivery
+Kitchen: Banana Split is about to be picked up
+Pickup Area: Banana Split has is about to be removed from shelf
+Shelf: Banana Split is removed from FROZEN shelf
+Courior: successfully picked up Banana Split after 5 seconds
+Client: b'no empty space for order Yogurt'
+Kitchen: McFlury is about to be picked up
+Pickup Area: McFlury has is about to be removed from shelf
+Shelf: McFlury is removed from default shelf
+Courior: successfully picked up McFlury after 5 seconds
+Kitchen: Acai Bowl is about to be picked up
+Pickup Area: Acai Bowl has is about to be removed from shelf
+Shelf: Acai Bowl is removed from COLD shelf
+Courior: successfully picked up Acai Bowl after 3 seconds
+Shelf: Chocolate Gelato has successfully placed in FROZEN shelf
+Courior: Chocolate Gelato order received for delivery
+Shelf: Cobb Salad has successfully placed in COLD shelf
+Courior: Cobb Salad order received for delivery
+Kitchen: Cobb Salad is about to be picked up
+Pickup Area: Cobb Salad has is about to be removed from shelf
+Shelf: Cobb Salad is removed from COLD shelf
+Shelf: Cottage Cheese has successfully placed in COLD shelf
+Courior: Cottage Cheese order received for delivery
+Courior: successfully picked up Cobb Salad after 2 seconds
+Kitchen: Chocolate Gelato is about to be picked up
+Pickup Area: Chocolate Gelato has is about to be removed from shelf
+Shelf: Chocolate Gelato is removed from FROZEN shelf
+Courior: successfully picked up Chocolate Gelato after 5 seconds
+Shelf: Coke has successfully placed in default shelf
+Courior: Coke order received for delivery
+Kitchen: Cottage Cheese is about to be picked up
+Pickup Area: Cottage Cheese has is about to be removed from shelf
+Shelf: Cottage Cheese is removed from COLD shelf
+Courior: successfully picked up Cottage Cheese after 3 seconds
+Shelf: Snow Cone has successfully placed in FROZEN shelf
+Courior: Snow Cone order received for delivery
+Kitchen: Coke is about to be picked up
+Pickup Area: Coke has is about to be removed from shelf
+Shelf: Coke is removed from default shelf
+Courior: successfully picked up Coke after 2 seconds
+Shelf: Pad See Ew has successfully placed in HOT shelf
+Courior: Pad See Ew order received for delivery
+Kitchen: Snow Cone is about to be picked up
+Pickup Area: Snow Cone has is about to be removed from shelf
+Shelf: Snow Cone is removed from FROZEN shelf
+Courior: successfully picked up Snow Cone after 4 seconds
+Shelf: Chunky Monkey has successfully placed in FROZEN shelf
+Courior: Chunky Monkey order received for delivery
+Shelf: Beef Stew has successfully placed in default shelf
+Courior: Beef Stew order received for delivery
+Kitchen: Chunky Monkey is about to be picked up
+Pickup Area: Chunky Monkey has is about to be removed from shelf
+Shelf: Chunky Monkey is removed from FROZEN shelf
+Courior: successfully picked up Chunky Monkey after 2 seconds
+Kitchen: Pad See Ew is about to be picked up
+Pickup Area: Pad See Ew has is about to be removed from shelf
+Shelf: Pad See Ew is removed from HOT shelf
+Courior: successfully picked up Pad See Ew after 5 seconds
+Shelf: Cheese has successfully placed in COLD shelf
+Courior: Cheese order received for delivery
+Shelf: Spinach Omelet has successfully placed in HOT shelf
+Courior: Spinach Omelet order received for delivery
+Kitchen: Beef Stew is about to be picked up
+Pickup Area: Beef Stew has is about to be removed from shelf
+Shelf: Beef Stew is removed from default shelf
+Courior: successfully picked up Beef Stew after 5 seconds
+Kitchen: Cheese is about to be picked up
+Pickup Area: Cheese has is about to be removed from shelf
+Shelf: Cheese is removed from COLD shelf
+Courior: successfully picked up Cheese after 4 seconds
+Shelf: Beef Hash has successfully placed in default shelf
+Courior: Beef Hash order received for delivery
+Kitchen: Spinach Omelet is about to be picked up
+Pickup Area: Spinach Omelet has is about to be removed from shelf
+Shelf: Spinach Omelet is removed from HOT shelf
+Courior: successfully picked up Spinach Omelet after 4 seconds
+Kitchen: Beef Hash is about to be picked up
+Pickup Area: Beef Hash has is about to be removed from shelf
+Shelf: Beef Hash is removed from default shelf
+Courior: successfully picked up Beef Hash after 2 seconds
+Shelf: Pork Chop has successfully placed in HOT shelf
+Courior: Pork Chop order received for delivery
+Shelf: Kale Salad has successfully placed in COLD shelf
+Courior: Kale Salad order received for delivery
+Kitchen: Pork Chop is about to be picked up
+Pickup Area: Pork Chop has is about to be removed from shelf
+Shelf: Pork Chop is removed from HOT shelf
+Courior: successfully picked up Pork Chop after 4 seconds
+Shelf: Fresh Fruit has successfully placed in default shelf
+Courior: Fresh Fruit order received for delivery
+Client: b'no empty space for order Cranberry Salad'
+Kitchen: Kale Salad is about to be picked up
+Pickup Area: Kale Salad has is about to be removed from shelf
+Shelf: Kale Salad is removed from COLD shelf
+Courior: successfully picked up Kale Salad after 5 seconds
+Shelf: Fudge Ice Cream Cake has successfully placed in FROZEN shelf
+Courior: Fudge Ice Cream Cake order received for delivery
+Kitchen: Fresh Fruit is about to be picked up
+Pickup Area: Fresh Fruit has is about to be removed from shelf
+Shelf: Fresh Fruit is removed from default shelf
+Courior: successfully picked up Fresh Fruit after 5 seconds
+Shelf: Mint Chocolate Ice Cream has successfully placed in default shelf
+Courior: Mint Chocolate Ice Cream order received for delivery
+Kitchen: Fudge Ice Cream Cake is about to be picked up
+Pickup Area: Fudge Ice Cream Cake has is about to be removed from shelf
+Shelf: Fudge Ice Cream Cake is removed from FROZEN shelf
+Courior: successfully picked up Fudge Ice Cream Cake after 4 seconds
+Shelf: Vegan Pizza has successfully placed in HOT shelf
+Courior: Vegan Pizza order received for delivery
+Kitchen: Vegan Pizza is about to be picked up
+Pickup Area: Vegan Pizza has is about to be removed from shelf
+Shelf: Vegan Pizza is removed from HOT shelf
+Courior: successfully picked up Vegan Pizza after 2 seconds
+Shelf: Orange Chicken has successfully placed in HOT shelf
+Courior: Orange Chicken order received for delivery
+Kitchen: Mint Chocolate Ice Cream is about to be picked up
+Pickup Area: Mint Chocolate Ice Cream has is about to be removed from shelf
+Shelf: Mint Chocolate Ice Cream is removed from default shelf
+Courior: successfully picked up Mint Chocolate Ice Cream after 5 seconds
+Shelf: MeatLoaf has successfully placed in default shelf
+Courior: MeatLoaf order received for delivery
+Kitchen: Orange Chicken is about to be picked up
+Pickup Area: Orange Chicken has is about to be removed from shelf
+Shelf: Orange Chicken is removed from HOT shelf
+Courior: successfully picked up Orange Chicken after 2 seconds
+Shelf: Milk has successfully placed in COLD shelf
+Courior: Milk order received for delivery
+Kitchen: MeatLoaf is about to be picked up
+Pickup Area: MeatLoaf has is about to be removed from shelf
+Shelf: MeatLoaf is removed from default shelf
+Courior: successfully picked up MeatLoaf after 3 seconds
+Shelf: Pastrami Sandwich has successfully placed in HOT shelf
+Courior: Pastrami Sandwich order received for delivery
+Kitchen: Milk is about to be picked up
+Pickup Area: Milk has is about to be removed from shelf
+Shelf: Milk is removed from COLD shelf
+Courior: successfully picked up Milk after 4 seconds
+Kitchen: Pastrami Sandwich is about to be picked up
+Pickup Area: Pastrami Sandwich has is about to be removed from shelf
+Shelf: Pastrami Sandwich is removed from HOT shelf
+Courior: successfully picked up Pastrami Sandwich after 2 seconds
+Shelf: Arugula has successfully placed in COLD shelf
+Courior: Arugula order received for delivery
+Kitchen: Arugula is about to be picked up
+Pickup Area: Arugula has is about to be removed from shelf
+Shelf: Arugula is removed from COLD shelf
+Shelf: Pickles has successfully placed in COLD shelf
+Courior: Pickles order received for delivery
+Shelf: Chicken has successfully placed in HOT shelf
+Courior: Chicken order received for delivery
+Shelf: Cookie Dough has successfully placed in FROZEN shelf
+Courior: Cookie Dough order received for delivery
+Kitchen: Pickles is about to be picked up
+Pickup Area: Pickles has is about to be removed from shelf
+Shelf: Pickles is removed from COLD shelf
+Courior: successfully picked up Pickles after 5 seconds
+	    Ãè   p¬à   @B–
+   –	]	   pÊ_	   ÄÖ      

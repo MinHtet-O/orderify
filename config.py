@@ -24,5 +24,5 @@ OVERFLOW_DECAY_MODS = 2
 # order_age of each order will increase by ORDER_AGE_INC continuously
 ORDER_AGE_INC = 30
 
-# tick events every clock_interval
-CLOCK_INTERVAL = 1
+# shelf management
+SHELF_POLICY_INTERVAL = 1
