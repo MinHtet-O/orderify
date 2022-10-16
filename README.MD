@@ -51,7 +51,7 @@ Currently, there are only four policies that
 ### Courior
 
 Courier manager receives the delivery order through the delivery queue for asynchronous communication.
-In further system, there could be multiple queues based on the address/ region of the order and each courier
+In further system, there could be multiple queues based on the address/ region of the order and each courier scheduler
 will only listen to its specific queue.
 Upon receiving the order, it waits for a random duration ( to stimulate the pickup duration ) before
 it pickup and sends a delivered message to the kitchen. The order is instantly delivered.
