@@ -14,7 +14,7 @@ allowable_shelf_size = 10
 overflow_shelf_size = 15
 ALLOWABLE_DECAY_MODS = {
     Temp.HOT: 1,
-    Temp.COLD: 1,
+    Temp.COLD: 1,GIT
     Temp.FROZEN: 1,
 
 }
