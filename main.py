@@ -78,8 +78,8 @@ def update_order_status(order_id):
         return f"invalid order id: {str(e)}", HTTP_STATUS_INTERNAL_ERROR
     except InvalidOrderStatus as e:
         return f"invalid order status: {str(e)}", HTTP_STATUS_INTERNAL_ERROR
-    # except Exception as e:
-    #     return "unknown error", HTTP_STATUS_INTERNAL_ERROR
+    except Exception as e:
+        return f"{str(e)}", HTTP_STATUS_INTERNAL_ERROR
     return '', HTTP_STATUS_OK
 
 
