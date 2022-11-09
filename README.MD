@@ -6,6 +6,7 @@ Orderify is the real-time system that emulates the fulfilment of delivery orders
 - Upon receiving an order, the system should dispatch a courier to pick up and deliver that specific order.
 - The courier should arrive randomly between 2-6 seconds later. The courier should instantly pick up the order upon arrival. Once an order is picked up, the courier should instantly deliver it.
 - Each order should be placed on a shelf that matches the order!s temperature. If that shelf is full, an order can be placed on the overflow shelf. If the overflow shelf is full, git existing order of your choosing on the overflow should be moved to an allowable shelf with the room
+- Orders have an inherent value that will deteriorate over time, based on the order!s shelfLife and decayRate fields. Orders that have reached a value of zero are considered wasted: they should never be delivered and should be removed from the shelf.
 
 ## Setup instructions
 1. Download and install [python3](https://www.python.org/downloads/) on your machine.
