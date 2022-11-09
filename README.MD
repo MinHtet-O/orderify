@@ -1,6 +1,6 @@
 # Orderify
 
-## Problem
+## About the system
 
 Orderify is the real-time system that emulates the fulfilment of delivery orders for a kitchen. The kitchen will instantly cook the order upon receiving it, and then place the order on the best-available shelf (see Shelves section) to await pick up by a waiter.
 - Upon receiving an order, the system should dispatch a courier to pick up and deliver that specific order.
