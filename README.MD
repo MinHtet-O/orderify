@@ -1,5 +1,12 @@
 # Orderify
 
+## Problem
+
+Orderify is the real-time system that emulates the fulfilment of delivery orders for a kitchen. The kitchen will instantly cook the order upon receiving it, and then place the order on the best-available shelf (see Shelves section) to await pick up by a waiter.
+- Upon receiving an order, the system should dispatch a courier to pick up and deliver that specific order.
+- The courier should arrive randomly between 2-6 seconds later. The courier should instantly pick up the order upon arrival. Once an order is picked up, the courier should instantly deliver it.
+- Each order should be placed on a shelf that matches the order!s temperature. If that shelf is full, an order can be placed on the overflow shelf. If the overflow shelf is full, git existing order of your choosing on the overflow should be moved to an allowable shelf with the room
+
 ## Setup instructions
 1. Download and install [python3](https://www.python.org/downloads/) on your machine.
 2. Clone the project and get into the root directory <br>```git clone https://github.com/MinHtet-O/orderify.git && cd orderify```
